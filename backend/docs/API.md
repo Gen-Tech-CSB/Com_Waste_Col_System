@@ -72,3 +72,38 @@ Responses:
 | Resident | resident@waste.test | Password123 |
 
 Tokens expire after 1 day (`JWT_EXPIRES_IN`).
+
+
+## Areas
+
+### GET /areas
+Lists all areas with their barangay. No auth.
+
+## Schedules
+
+One schedule = one area on one day of the week. All listed waste types are collected together
+on that day (default: biodegradable, non_biodegradable, recyclable; `special` is optional).
+
+### GET /schedules
+Bearer token. Residents see only active schedules for their own area. Admin and collector see
+all schedules and can filter with `?area_id=1`. Each item has `waste_types` (array),
+`area_name`, `barangay_name`. `day_of_week`: 0 = Sunday to 6 = Saturday.
+
+### POST /schedules (admin only)
+```json
+{
+  "area_ids": [1, 2],
+  "day_of_week": 1,
+  "start_time": "06:00",
+  "end_time": "09:00",
+  "waste_types": ["biodegradable", "non_biodegradable", "recyclable"]
+}
+```
+Creates one schedule per area; if any fails, none are saved. `waste_types` and `is_active` are optional.
+Responses: `201` (array), `400`, `401`, `403`, `409` (same area, day, and start time already exists).
+
+### PUT /schedules/:id (admin only)
+Same fields with a single `area_id`. Responses: `200`, `400`, `404`, `409`.
+
+### DELETE /schedules/:id (admin only)
+Responses: `200`, `404`.

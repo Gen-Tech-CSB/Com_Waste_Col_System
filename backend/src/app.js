@@ -19,5 +19,7 @@ app.get('/api/health', async (req, res) => {
 });
 
 app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/areas', require('./routes/area.routes'));
+app.use('/api/schedules', require('./routes/schedule.routes'));
 
 module.exports = app;

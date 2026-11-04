@@ -21,16 +21,18 @@ class WasteApp extends StatelessWidget {
       title: 'Community Waste',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
-          primary: Colors.green[700],
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF161C24),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF00E676),
+          surface: Color(0xFF222B36),
         ),
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.grey[50],
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.green,
+          backgroundColor: Color(0xFF161C24),
           foregroundColor: Colors.white,
           elevation: 0,
+          centerTitle: true,
+          titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1),
         ),
       ),
       home: const LoginScreen(),

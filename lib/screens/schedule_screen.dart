@@ -7,66 +7,105 @@ class ScheduleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Kini ang nagbasa sa data gikan sa Admin
     final schedules = context.watch<ScheduleProvider>().schedules;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text(
-          'Your Collection Schedule',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        
-        // Kini ang nag-drowing sa matag schedule
-        ...schedules.map((schedule) {
-          bool isBio = schedule.type == 'Biodegradable';
-          Color color = isBio 
-              ? Colors.green 
-              : (schedule.type == 'Recyclable' ? Colors.orange : Colors.blue);
-          IconData icon = isBio 
-              ? Icons.eco 
-              : (schedule.type == 'Recyclable' ? Icons.recycling : Icons.delete);
-
-          return Card(
-            elevation: 3,
-            margin: const EdgeInsets.only(bottom: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: color, width: 1.5),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
+    return Scaffold(
+      backgroundColor: const Color(0xFF161C24),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(icon, color: color, size: 32),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Collection Schedule', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                      SizedBox(height: 4),
+                      Row(children: [Icon(Icons.location_on_outlined, color: Colors.grey, size: 16), SizedBox(width: 4), Text('Purok 1, Barangay Uno', style: TextStyle(fontSize: 14, color: Colors.grey))]),
+                    ],
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(schedule.day, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 4),
-                        Text(schedule.time, style: const TextStyle(color: Colors.grey)),
-                        const SizedBox(height: 4),
-                        Text(schedule.type, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: const Color(0xFF222B36), border: Border.all(color: const Color(0xFF2C3A47))),
+                    child: const Icon(Icons.person, color: Color(0xFF00E676)),
                   ),
                 ],
               ),
             ),
-          );
-        }).toList(),
-      ],
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F2D1E),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFF00E676).withOpacity(0.3), width: 1),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('Monday, 6:00 AM', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF00E676))),
+                          SizedBox(height: 4),
+                          Text('Put all waste out by 6:00 AM', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                        ]),
+                        Text('In 2 days', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF00E676))),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ...schedules.map((schedule) {
+                    bool isBio = schedule.type == 'Biodegradable';
+                    Color color = isBio ? const Color(0xFF00E676) : (schedule.type == 'Recyclable' ? const Color(0xFFFFA000) : const Color(0xFF00B0FF));
+                    return _buildDayCard(schedule.day, schedule.time, color);
+                  }).toList(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDayCard(String day, String time, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: const Color(0xFF222B36), borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFF2C3A47))),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(children: [Icon(Icons.calendar_today_outlined, color: color, size: 20), const SizedBox(width: 8), Text(day, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white))]),
+              Text(time, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildTag('Biodegradable', const Color(0xFF00E676)),
+              _buildTag('Non-Bio', const Color(0xFFFFA000)),
+              _buildTag('Recyclable', const Color(0xFF00B0FF)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTag(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.circle, size: 8, color: color), const SizedBox(width: 6), Text(label, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.bold))]),
     );
   }
 }

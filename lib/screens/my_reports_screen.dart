@@ -5,8 +5,6 @@ class MyReportsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Wala pa kay mga report.', style: TextStyle(fontSize: 16)),
-    );
+    return const Center(child: Text('Wala pa kay mga report.', style: TextStyle(fontSize: 16, color: Colors.grey)));
   }
 }

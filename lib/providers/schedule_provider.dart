@@ -10,8 +10,8 @@ class Schedule {
 
 class ScheduleProvider extends ChangeNotifier {
   final List<Schedule> _schedules = [
-    Schedule(day: 'Monday', time: '6:00 AM', type: 'Biodegradable'),
-    Schedule(day: 'Thursday', time: '6:00 AM', type: 'Non-Biodegradable'),
+    Schedule(day: 'Monday', time: '6:00 to 9:00 AM', type: 'Biodegradable'),
+    Schedule(day: 'Thursday', time: '6:00 to 9:00 AM', type: 'Non-Biodegradable'),
   ];
 
   List<Schedule> get schedules => _schedules;

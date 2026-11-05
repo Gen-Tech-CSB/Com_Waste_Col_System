@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/schedule_provider.dart';
+import 'providers/announcement_provider.dart'; // ✅ Import
 import 'screens/login_screen.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ScheduleProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ScheduleProvider()),
+        ChangeNotifierProvider(create: (context) => AnnouncementProvider()), // ✅ Register
+      ],
       child: const WasteApp(),
     ),
   );

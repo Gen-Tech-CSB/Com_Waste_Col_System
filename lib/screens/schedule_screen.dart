@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/schedule_provider.dart';
+import '../providers/announcement_provider.dart'; // ✅ Import
 
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
@@ -8,6 +9,7 @@ class ScheduleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final schedules = context.watch<ScheduleProvider>().schedules;
+    final announcement = context.watch<AnnouncementProvider>().currentAnnouncement; // ✅ BASA SA PROVIDER
 
     return Scaffold(
       backgroundColor: const Color(0xFF161C24),
@@ -35,10 +37,38 @@ class ScheduleScreen extends StatelessWidget {
                 ],
               ),
             ),
+            
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
+                  // 📢 ANNOUNCEMENT BANNER (Gikan sa Provider)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF332200),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFFFA000).withOpacity(0.5), width: 1),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.campaign, color: Color(0xFFFFA000), size: 28),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Announcement', style: TextStyle(color: Color(0xFFFFA000), fontWeight: FontWeight.bold, fontSize: 14)),
+                              const SizedBox(height: 4),
+                              Text(announcement, style: const TextStyle(color: Colors.white70, fontSize: 13)), // ✅ SHOW
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -59,6 +89,7 @@ class ScheduleScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  
                   ...schedules.map((schedule) {
                     bool isBio = schedule.type == 'Biodegradable';
                     Color color = isBio ? const Color(0xFF00E676) : (schedule.type == 'Recyclable' ? const Color(0xFFFFA000) : const Color(0xFF00B0FF));

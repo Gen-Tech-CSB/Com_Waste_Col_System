@@ -6,6 +6,15 @@ Database: PostgreSQL. Name: `waste_db`. Tool: pgAdmin (or `psql`).
 
 In pgAdmin, connect to your PostgreSQL server (as `postgres`), right-click the `postgres` database, choose **Query Tool**, and run (use your own password, letters and numbers only):
 
+On Linux or Codespace (no pgAdmin), run these instead:
+
+```
+sudo runuser -u postgres -- psql -c "CREATE USER waste_user WITH PASSWORD 'ChangeMe123';"
+sudo runuser -u postgres -- psql -c "CREATE DATABASE waste_db OWNER waste_user;"
+```
+
+`sudo -u postgres psql` may ask for a sudo password in Codespace. `runuser` does not.
+
 ```sql
 CREATE USER waste_user WITH PASSWORD 'ChangeMe123';
 CREATE DATABASE waste_db OWNER waste_user;

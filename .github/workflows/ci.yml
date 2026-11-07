@@ -1,35 +1,143 @@
 
-name: Test CI CD
+name: Community Waste System CI
 
 on:
   push:
+    branches:
+      - 'ci/cd'
+      - sub-main
+      - main
+
   pull_request:
+    branches:
+      - sub-main
+      - main
+
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  verify:
-    name: Verify GitHub Actions
+
+  # ===================================
+  # FLUTTER FRONTEND TESTING
+  # ===================================
+  flutter:
+    name: Flutter Tests and Web Build
     runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
-      - name: Check Workflow
-        run: echo "GitHub Actions is working!"
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
 
       - name: Check Flutter Project
-        run: |
-          test -f pubspec.yaml
-          echo "Flutter project found!"
+        run: test -f pubspec.yaml
 
-      - name: Check Backend Folder
-        run: |
-          test -d backend
-          echo "Backend folder found!"
+      - name: Install Flutter Dependencies
+        run: flutter pub get
 
-      - name: Finish
-        run: echo "CI/CD verification completed!"
+      - name: Analyze Dart Code
+        run: flutter analyze
+
+      - name: Run Flutter Tests
+        run: |
+          if [ -d test ] && find test -name '*_test.dart' | grep -q .; then
+            flutter test
+          else
+            echo "::error::No Flutter tests found in test/"
+            exit 1
+          fi
+
+      - name: Check Web Platform
+        run: |
+          if [ ! -f web/index.html ]; then
+            echo "::error::Flutter web/ folder is missing"
+            exit 1
+          fi
+
+      - name: Build Flutter Web
+        run: flutter build web --release
+
+      - name: Upload Web Build
+        uses: actions/upload-artifact@v7
+        with:
+          name: flutter-web-build
+          path: build/web/
+          if-no-files-found: error
+
+  # ===================================
+  # EXPRESS BACKEND + POSTGRESQL
+  # ===================================
+  backend:
+    name: Backend and PostgreSQL Tests
+    runs-on: ubuntu-24.04
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd "pg_isready -U testuser -d testdb"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      NODE_ENV: test
+      PORT: 3000
+      DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: testuser
+      PGPASSWORD: testpass
+      PGDATABASE: testdb
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Check Backend Files
+        run: |
+          test -f package.json
+          test -f package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Check Backend Code
+        run: npm run lint --if-present
+
+      - name: Apply Database Migrations
+        run: |
+          if node -e "process.exit(require('./package.json').scripts?.migrate ? 0 : 1)"; then
+            npm run migrate
+          else
+            echo "::warning::No migrate script found. Migration testing skipped."
+          fi
+
+      - name: Run Backend Tests
+        run: npm test

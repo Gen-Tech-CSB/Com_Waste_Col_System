@@ -107,3 +107,35 @@ Same fields with a single `area_id`. Responses: `200`, `400`, `404`, `409`.
 
 ### DELETE /schedules/:id (admin only)
 Responses: `200`, `404`.
+
+
+## Reports
+
+Photo URLs are paths like `/uploads/reports/<id>.jpg`. Open them as `http://<host>:3000` plus the path.
+Categories: `missed_pickup`, `illegal_dumping`, `overflowing_bin`, `other`.
+Statuses: `submitted`, `under_review`, `in_progress`, `resolved`, `rejected`.
+Status flow: submitted to under_review to in_progress to resolved. A report can be rejected
+before it is resolved (remarks required). `resolved` and `rejected` are final.
+
+### POST /reports (resident only, multipart/form-data)
+Fields: `category`, `description` (5 to 1000 characters), `area_id` (optional, defaults to the
+resident's area), `latitude` and `longitude` (optional, must be sent together), `location_note`
+(optional), and up to 3 `photos` (JPG, PNG, or WEBP, max 5 MB each; the field name must be `photos`).
+Responses: `201` returns the report with `reference_no`, `photos`, and `history`; `400`, `401`, `403`.
+
+### GET /reports/mine (resident only)
+Query: `page`, `limit`, `status`, `category`. Returns `data` (list) and `meta` (`page`, `limit`, `total`).
+
+### GET /reports/:id
+Owner, admin, or collector. Returns photos and the status `history` (timeline).
+A resident requesting someone else's report gets `404`.
+
+### GET /reports (admin and collector)
+Query: `page`, `limit`, `status`, `category`, `area_id`. Returns `data` and `meta`. Residents get `403`.
+
+### PATCH /reports/:id/status (admin only)
+```json
+{ "status": "under_review", "remarks": "We are checking this report." }
+```
+Responses: `200` returns the updated report, `400` (`remarks` required when rejecting), `403`, `404`,
+`409` if the change is not allowed from the current status.

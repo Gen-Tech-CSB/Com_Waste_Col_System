@@ -48,26 +48,37 @@ npm run migrate
 npm run seed
 ```
 
-Expected output: `applied 001_init.sql`, then `seed done`.
-Running them again is safe: migrate prints `skip ...` and seed does not duplicate data.
+Expected output: `applied 001_init.sql`, `applied 002_schedules.sql`, `applied 003_schedule_waste_types.sql`, `applied 004_reports.sql`, then `seed done`.
 
 ## 4. Verify in pgAdmin
 
-Open `waste_db`, then Schemas, public, Tables (right-click Tables, Refresh). You should see:
+Open `waste_db`, then Schemas, public, Tables (right-click Tables, Refresh). You should see 8 tables:
 
 | Table | Purpose |
 |---|---|
 | `users` | Accounts with role (`resident`, `admin`, `collector`) |
 | `barangays` | List of barangays |
 | `areas` | Zones/puroks inside a barangay |
+| `collection_schedules` | One row per area per day of the week; `waste_types` is a list collected together |
+| `reports` | Resident reports (missed pickup, illegal dumping, and so on) with a reference number and status |
+| `report_photos` | Photo paths for each report (up to 3 per report) |
+| `report_status_history` | Status timeline of each report (who changed it, when, and the remarks) |
 | `schema_migrations` | Tracks which migration files were applied |
 
-After seeding: 2 barangays, 5 areas, and 3 users (admin, collector, resident).
+After seeding: 2 barangays, 8 areas, 3 users (admin, collector, resident), and 16 schedules.
+The reports tables stay empty until reports are submitted.
 
 ## Relationships
 
 - `areas.barangay_id` references `barangays.id`
 - `users.area_id` references `areas.id`
+- `collection_schedules.area_id` references `areas.id`
+- `reports.user_id` references `users.id` (the resident who reported)
+- `reports.area_id` references `areas.id`
+- `reports.assigned_to` references `users.id` (the staff assigned, optional)
+- `report_photos.report_id` references `reports.id` (deleted together with the report)
+- `report_status_history.report_id` references `reports.id` (deleted together with the report)
+- `report_status_history.changed_by` references `users.id`
 
 ## Migrations
 

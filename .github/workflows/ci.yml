@@ -1,10 +1,15 @@
 
-name: Sub-Main CI
+name: Flutter Backend CI/CD
 
+# ======================================
+# WORKFLOW TRIGGERS
+# ======================================
 on:
   push:
     branches:
+      - 'ci/cd'
       - sub-main
+      - main
 
   pull_request:
     branches:
@@ -18,9 +23,31 @@ permissions:
 
 jobs:
 
-  # FLUTTER FRONTEND TEST
+  # ======================================
+  # JOB 1: VERIFY GITHUB WORKFLOW
+  # ======================================
+  verify:
+    name: Verify Workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Show Workflow Information
+        run: |
+          echo "GitHub Actions is working!"
+          echo "Branch: $GITHUB_REF_NAME"
+          echo "Event: $GITHUB_EVENT_NAME"
+
+      - name: Show Project Folders
+        run: ls -la
+
+  # ======================================
+  # JOB 2: FLUTTER FRONTEND
+  # ======================================
   flutter:
-    name: Flutter CI
+    name: Flutter Test and Web Build
     runs-on: ubuntu-latest
 
     defaults:
@@ -28,40 +55,56 @@ jobs:
         working-directory: frontend
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
-      - name: Set up Flutter
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
-      - name: Install dependencies
+      - name: Check Flutter Version
+        run: flutter --version
+
+      - name: Install Dependencies
         run: flutter pub get
 
-      - name: Analyze code
+      - name: Analyze Flutter Code
         run: flutter analyze
 
-      - name: Run tests
+      - name: Run Flutter Tests
         run: flutter test
 
-      - name: Build Web
-        run: flutter build web
+      - name: Build Flutter Web
+        run: flutter build web --release
 
-  # BACKEND AND DATABASE TEST
+      - name: Upload Web Build
+        uses: actions/upload-artifact@v7
+        with:
+          name: flutter-web-build
+          path: frontend/build/web/
+          if-no-files-found: error
+
+  # ======================================
+  # JOB 3: NODE.JS EXPRESS + POSTGRESQL
+  # ======================================
   backend:
-    name: Backend CI
+    name: Backend and Database Tests
     runs-on: ubuntu-latest
 
     services:
       postgres:
         image: postgres:16
+
         env:
           POSTGRES_USER: testuser
           POSTGRES_PASSWORD: testpass
           POSTGRES_DB: testdb
+
         ports:
           - 5432:5432
+
         options: >-
           --health-cmd "pg_isready -U testuser -d testdb"
           --health-interval 10s
@@ -74,19 +117,36 @@ jobs:
 
     env:
       NODE_ENV: test
+      PORT: 3000
       DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: testuser
+      PGPASSWORD: testpass
+      PGDATABASE: testdb
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
-      - name: Install dependencies
+      - name: Check Node Version
+        run: node --version
+
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Run tests
+      - name: Run Lint Checks
+        run: npm run lint --if-present
+
+      - name: Run Database Migrations
+        run: npm run migrate --if-present
+
+      - name: Run Backend Tests
         run: npm test

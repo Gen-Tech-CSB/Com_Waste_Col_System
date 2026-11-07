@@ -1,9 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/announcement_provider.dart'; // ✅ Import
 import 'manage_schedules.dart';
 import 'login_screen.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
+
+  void _showAnnouncementDialog(BuildContext context) {
+    final TextEditingController controller = TextEditingController();
+    final provider = Provider.of<AnnouncementProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF222B36),
+          title: const Text('Post Announcement', style: TextStyle(color: Colors.white)),
+          content: TextField(
+            controller: controller,
+            style: const TextStyle(color: Colors.white),
+            maxLines: 3,
+            decoration: InputDecoration(
+              hintText: 'Type your announcement here...',
+              hintStyle: const TextStyle(color: Colors.grey),
+              filled: true,
+              fillColor: const Color(0xFF161C24),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: const Color(0xFF00E676), foregroundColor: Colors.black),
+              onPressed: () {
+                provider.updateAnnouncement(controller.text);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Announcement Posted!'), backgroundColor: Colors.green),
+                );
+              },
+              child: const Text('Post'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,8 +58,20 @@ class AdminDashboard extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
         actions: [
-          IconButton(icon: const Icon(Icons.calendar_month, color: Color(0xFF00E676)), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ManageSchedules()))),
-          IconButton(icon: const Icon(Icons.logout, color: Colors.redAccent), onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()))),
+          IconButton(
+            icon: const Icon(Icons.campaign, color: Color(0xFFFFA000)),
+            tooltip: 'Post Announcement',
+            onPressed: () => _showAnnouncementDialog(context),
+          ),
+          IconButton(
+            icon: const Icon(Icons.calendar_month, color: Color(0xFF00E676)),
+            tooltip: 'Manage Schedules',
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ManageSchedules())),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.redAccent),
+            onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen())),
+          ),
         ],
       ),
       body: Padding(

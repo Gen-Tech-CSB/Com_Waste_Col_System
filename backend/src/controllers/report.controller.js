@@ -22,6 +22,7 @@ const listQuery = z.object({
   status: z.enum(STATUSES).optional(),
   category: z.enum(CATEGORIES).optional(),
   area_id: z.coerce.number().int().optional(),
+  q: z.string().trim().max(100).optional(),
 });
 
 const statusSchema = z.object({
@@ -87,6 +88,7 @@ const sendList = async (res, q, userId) => {
     userId,
     status: q.status ?? null,
     category: q.category ?? null,
+    q: q.q || null,
     areaId: userId ? null : (q.area_id ?? null),
     limit: q.limit,
     offset: (q.page - 1) * q.limit,
@@ -130,6 +132,25 @@ exports.updateStatus = async (req, res) => {
     if (out.notFound) return res.status(404).json({ success: false, message: 'Report not found' });
     if (out.invalid)
       return res.status(409).json({ success: false, message: `Cannot change status from ${out.from} to ${p.data.status}` });
+    res.json({ success: true, data: await Report.findById(id) });
+  } catch (e) { serverError(e, res); }
+};
+
+const assignSchema = z.object({ collector_id: z.number().int() });
+
+exports.assign = async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) return res.status(404).json({ success: false, message: 'Report not found' });
+  const p = assignSchema.safeParse(req.body);
+  if (!p.success)
+    return res.status(400).json({ success: false, message: 'Invalid input', errors: p.error.issues });
+  try {
+    const out = await Report.assign(id, p.data.collector_id, req.user.id);
+    if (out.notFound) return res.status(404).json({ success: false, message: 'Report not found' });
+    if (out.closed)
+      return res.status(409).json({ success: false, message: `Cannot assign a ${out.status} report` });
+    if (out.badCollector)
+      return res.status(400).json({ success: false, message: 'collector_id must belong to a collector account' });
     res.json({ success: true, data: await Report.findById(id) });
   } catch (e) { serverError(e, res); }
 };

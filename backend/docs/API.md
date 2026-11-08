@@ -139,3 +139,25 @@ Query: `page`, `limit`, `status`, `category`, `area_id`. Returns `data` and `met
 ```
 Responses: `200` returns the updated report, `400` (`remarks` required when rejecting), `403`, `404`,
 `409` if the change is not allowed from the current status.
+
+
+### GET /reports (search)
+New query `q`: matches the reference number, description, or reporter name. Items now include
+`assigned_to` and `assigned_to_name`.
+
+### PATCH /reports/:id/assign (admin only)
+```json
+{ "collector_id": 2 }
+```
+Responses: `200` returns the report (with an `Assigned to ...` entry in `history`), `400` not a collector,
+`403`, `404`, `409` the report is already resolved or rejected.
+
+## Stats
+
+### GET /stats/summary (admin only)
+Returns `total`, `by_status`, `by_category`, and `unassigned_open` (open reports with no collector).
+
+## Users
+
+### GET /users/collectors (admin only)
+Lists collector accounts (`id`, `full_name`, `email`) for the assign dropdown.

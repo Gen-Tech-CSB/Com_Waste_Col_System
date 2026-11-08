@@ -27,6 +27,8 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads'), {
   setHeaders: (res) => res.set('Cross-Origin-Resource-Policy', 'cross-origin'),
 }));
 app.use('/api/reports', require('./routes/report.routes'));
+app.use('/api/stats', require('./routes/stats.routes'));
+app.use('/api/users', require('./routes/user.routes'));
 
 
 

@@ -19,3 +19,9 @@ exports.create = async ({ full_name, email, password_hash, area_id, phone }) => 
     [full_name, email.toLowerCase(), password_hash, area_id ?? null, phone ?? null]);
   return r.rows[0];
 };
+
+exports.listCollectors = async () => {
+  const r = await pool.query(
+    "SELECT id, full_name, email FROM users WHERE role = 'collector' ORDER BY full_name");
+  return r.rows;
+};

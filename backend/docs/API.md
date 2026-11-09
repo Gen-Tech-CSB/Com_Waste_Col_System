@@ -185,3 +185,10 @@ Query: `date` (YYYY-MM-DD, default today), `status`, `area_id`.
 
 ### GET /runs/mine (resident only)
 Runs for the resident's own area for the last 7 days, to show "Collected at ..." in the app.
+
+
+## Errors and limits
+- Unknown `/api/...` routes return `404` `Route not found`; a malformed JSON body returns `400` `Invalid JSON body`.
+- `POST /auth/login` allows 10 failed attempts per IP every 15 minutes (`429` after that; successful logins are not counted).
+  `POST /auth/register` allows 20 requests per IP every 15 minutes. Both can be changed with
+  `LOGIN_RATE_LIMIT` and `REGISTER_RATE_LIMIT` in `.env`.

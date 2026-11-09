@@ -30,8 +30,8 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password)
+  const { email, password } = req.body || {};
+  if (typeof email !== 'string' || typeof password !== 'string' || !email || !password)
     return res.status(400).json({ success: false, message: 'Email and password required' });
   try {
     const user = await User.findByEmail(email);

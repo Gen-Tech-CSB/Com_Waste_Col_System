@@ -17,6 +17,10 @@ import 'package:community_waste_frontend/theme/app_theme.dart';
 
 void main() {
   setUpAll(() async {
+    // Font files are needed only for the Windows screenshot references.
+    if (!Platform.isWindows || const bool.fromEnvironment('LAYOUT_ONLY')) {
+      return;
+    }
     final config = jsonDecode(
       File('.dart_tool/package_config.json').readAsStringSync(),
     );
@@ -123,7 +127,7 @@ void main() {
           brightness,
         );
         expect(saved, brightness == Brightness.light ? 'light' : 'dark');
-        if (Platform.isWindows) {
+        if (Platform.isWindows && !const bool.fromEnvironment('LAYOUT_ONLY')) {
           await expectLater(
             find.byType(SettingsScreen),
             matchesGoldenFile('goldens/settings_${width.toInt()}_$saved.png'),

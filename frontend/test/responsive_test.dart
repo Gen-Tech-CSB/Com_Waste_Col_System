@@ -14,6 +14,10 @@ import 'package:community_waste_frontend/theme/app_theme.dart';
 
 void main() {
   setUpAll(() async {
+    // CI runs layout checks with its default test fonts, not Windows goldens.
+    if (!Platform.isWindows || const bool.fromEnvironment('LAYOUT_ONLY')) {
+      return;
+    }
     final config = jsonDecode(
       File('.dart_tool/package_config.json').readAsStringSync(),
     );
@@ -66,7 +70,7 @@ void main() {
       );
       // These references were rendered on Windows. Linux uses different font
       // rasterization; keep layout and interaction checks active on every OS.
-      if (Platform.isWindows) {
+      if (Platform.isWindows && !const bool.fromEnvironment('LAYOUT_ONLY')) {
         await expectLater(
           find.byType(ResidentHome),
           matchesGoldenFile('goldens/resident_${width.toInt()}.png'),

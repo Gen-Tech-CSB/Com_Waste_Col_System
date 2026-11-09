@@ -68,6 +68,143 @@ class _ResidentHomeState extends State<ResidentHome> {
     ),
   );
 
+  Widget _sidebar(BuildContext context) {
+    final colors = Ui.of(context);
+    return Container(
+      width: 248,
+      decoration: BoxDecoration(
+        color: colors.surface,
+        border: Border(right: BorderSide(color: colors.border)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 32),
+      child: Material(
+        color: colors.surface,
+        child: LayoutBuilder(
+          builder: (context, viewport) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: viewport.maxHeight),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.recycling,
+                              color: colors.green,
+                              size: 32,
+                            ),
+                            const SizedBox(width: 10),
+                            Flexible(
+                              child: Text(
+                                'Community\nWaste',
+                                style: TextStyle(
+                                  color: colors.text,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.15,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 48),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 14, bottom: 16),
+                        child: Text(
+                          'RESIDENT WORKSPACE',
+                          style: TextStyle(
+                            color: colors.muted,
+                            fontSize: 10,
+                            letterSpacing: 1.8,
+                          ),
+                        ),
+                      ),
+                      for (var i = 0; i < _labels.length; i++)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            selected: i == _selectedIndex,
+                            selectedTileColor: colors.green.withValues(
+                              alpha: 0.12,
+                            ),
+                            selectedColor: colors.green,
+                            iconColor: colors.muted,
+                            textColor: colors.muted,
+                            leading: Icon(_icons[i], size: 21),
+                            title: Text(
+                              _labels[i],
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            onTap: () => setState(() => _selectedIndex = i),
+                          ),
+                        ),
+                      ListTile(
+                        leading: const Icon(Icons.settings_outlined),
+                        title: const Text('Settings'),
+                        textColor: colors.muted,
+                        iconColor: colors.muted,
+                        onTap: _openSettings,
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SurfaceCard(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.spa_outlined, color: colors.green),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Small habits.\nCleaner communities.',
+                                style: TextStyle(
+                                  color: colors.text,
+                                  height: 1.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ListTile(
+                          leading: const Icon(Icons.logout, size: 20),
+                          title: const Text('Sign out'),
+                          textColor: colors.muted,
+                          iconColor: colors.muted,
+                          onTap: _logout,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
@@ -116,143 +253,7 @@ class _ResidentHomeState extends State<ResidentHome> {
         body: SafeArea(
           child: Row(
             children: [
-              if (wide)
-                Container(
-                  width: 248,
-                  decoration: BoxDecoration(
-                    color: Ui.of(context).surface,
-                    border: Border(
-                      right: BorderSide(color: Ui.of(context).border),
-                    ),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 32,
-                  ),
-                  child: Material(
-                    color: Ui.of(context).surface,
-                    child: LayoutBuilder(
-                      builder: (context, sidebar) => SingleChildScrollView(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: sidebar.maxHeight,
-                          ),
-                          child: IntrinsicHeight(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.recycling,
-                                        color: Ui.of(context).green,
-                                        size: 32,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Flexible(
-                                        child: Text(
-                                          'Community\nWaste',
-                                          style: TextStyle(
-                                            color: Ui.of(context).text,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700,
-                                            height: 1.15,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 48),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 14,
-                                    bottom: 16,
-                                  ),
-                                  child: Text(
-                                    'RESIDENT WORKSPACE',
-                                    style: TextStyle(
-                                      color: Ui.of(context).muted,
-                                      fontSize: 10,
-                                      letterSpacing: 1.8,
-                                    ),
-                                  ),
-                                ),
-                                for (var i = 0; i < _labels.length; i++)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: ListTile(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      selected: i == _selectedIndex,
-                                      selectedTileColor: Ui.of(context).green
-                                          .withValues(alpha: 0.12),
-                                      selectedColor: Ui.of(context).green,
-                                      iconColor: Ui.of(context).muted,
-                                      textColor: Ui.of(context).muted,
-                                      leading: Icon(_icons[i], size: 21),
-                                      title: Text(
-                                        _labels[i],
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      onTap: () =>
-                                          setState(() => _selectedIndex = i),
-                                    ),
-                                  ),
-                                ListTile(
-                                  leading: const Icon(Icons.settings_outlined),
-                                  title: const Text('Settings'),
-                                  textColor: Ui.of(context).muted,
-                                  iconColor: Ui.of(context).muted,
-                                  onTap: _openSettings,
-                                ),
-                                const Spacer(),
-                                SurfaceCard(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Icon(
-                                        Icons.spa_outlined,
-                                        color: Ui.of(context).green,
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        'Small habits.\nCleaner communities.',
-                                        style: TextStyle(
-                                          color: Ui.of(context).text,
-                                          height: 1.5,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                ListTile(
-                                  leading: const Icon(Icons.logout, size: 20),
-                                  title: const Text('Sign out'),
-                                  textColor: Ui.of(context).muted,
-                                  iconColor: Ui.of(context).muted,
-                                  onTap: _logout,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              if (wide) _sidebar(context),
               Expanded(
                 child: Column(
                   children: [

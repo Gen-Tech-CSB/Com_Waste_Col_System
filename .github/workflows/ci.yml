@@ -4,7 +4,7 @@ name: Community Waste System CI
 on:
   push:
     branches:
-      - 'cd/cd_workflow'
+      - 'ci/cd_workflow'
 
   workflow_dispatch:
 

@@ -3,7 +3,6 @@ import 'schedule_screen.dart';
 import 'report_screen.dart';
 import 'my_reports_screen.dart';
 import 'guide_screen.dart';
-import 'login_screen.dart';
 
 class ResidentHome extends StatefulWidget {
   const ResidentHome({super.key});
@@ -28,25 +27,69 @@ class _ResidentHomeState extends State<ResidentHome> {
       backgroundColor: const Color(0xFF161C24),
       appBar: AppBar(
         title: const Text('Community Waste'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.redAccent),
-            onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen())),
-          ),
-        ],
+        backgroundColor: const Color(0xFF161C24),
       ),
       body: _screens[_selectedIndex],
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: const Color(0xFF222B36),
-        indicatorColor: const Color(0xFF00E676).withOpacity(0.2),
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.calendar_month_outlined, color: Colors.grey), selectedIcon: Icon(Icons.calendar_month, color: Color(0xFF00E676)), label: 'Schedule'),
-          NavigationDestination(icon: Icon(Icons.add_a_photo_outlined, color: Colors.grey), selectedIcon: Icon(Icons.add_a_photo, color: Color(0xFF00E676)), label: 'Report'),
-          NavigationDestination(icon: Icon(Icons.list_alt_outlined, color: Colors.grey), selectedIcon: Icon(Icons.list_alt, color: Color(0xFF00E676)), label: 'My Reports'),
-          NavigationDestination(icon: Icon(Icons.menu_book_outlined, color: Colors.grey), selectedIcon: Icon(Icons.menu_book, color: Color(0xFF00E676)), label: 'Guide'),
-        ],
+      
+      // ✅ ANIMATED BOTTOM NAVIGATION
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.all(16),
+        height: 70,
+        decoration: BoxDecoration(
+          color: const Color(0xFF222B36),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 20, offset: const Offset(0, 10)),
+            BoxShadow(color: const Color(0xFF00E676).withOpacity(0.1), blurRadius: 20, spreadRadius: 2),
+          ],
+          border: Border.all(color: const Color(0xFF2C3A47), width: 1),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildNavItem(0, Icons.calendar_month, 'Schedule'),
+            _buildNavItem(1, Icons.add_a_photo, 'Report'),
+            _buildNavItem(2, Icons.list_alt, 'My Reports'),
+            _buildNavItem(3, Icons.menu_book, 'Guide'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ✅ HELPER PARA SA ANIMATED NAV ITEM
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    final isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedIndex = index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF00E676).withOpacity(0.15) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? const Color(0xFF00E676) : Colors.grey,
+              size: 24,
+            ),
+            if (isSelected) ...[
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Color(0xFF00E676),
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/schedule_provider.dart';
-import '../providers/announcement_provider.dart'; // ✅ Import
+import '../providers/announcement_provider.dart';
+import 'profile_screen.dart'; // ✅ Import sa ProfileScreen
 
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
@@ -9,7 +10,7 @@ class ScheduleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final schedules = context.watch<ScheduleProvider>().schedules;
-    final announcement = context.watch<AnnouncementProvider>().currentAnnouncement; // ✅ BASA SA PROVIDER
+    final announcement = context.watch<AnnouncementProvider>().currentAnnouncement;
 
     return Scaffold(
       backgroundColor: const Color(0xFF161C24),
@@ -29,10 +30,25 @@ class ScheduleScreen extends StatelessWidget {
                       Row(children: [Icon(Icons.location_on_outlined, color: Colors.grey, size: 16), SizedBox(width: 4), Text('Purok 1, Barangay Uno', style: TextStyle(fontSize: 14, color: Colors.grey))]),
                     ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: const Color(0xFF222B36), border: Border.all(color: const Color(0xFF2C3A47))),
-                    child: const Icon(Icons.person, color: Color(0xFF00E676)),
+                  
+                  // ✅ KINI ANG PROFILE BUTTON NGA MO-ADTO SA PROFILE SCREEN
+                  IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle, 
+                        color: const Color(0xFF222B36), 
+                        border: Border.all(color: const Color(0xFF00E676).withOpacity(0.3)),
+                      ),
+                      child: const Icon(Icons.person, color: Color(0xFF00E676)),
+                    ),
+                    tooltip: 'View Profile',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -42,7 +58,7 @@ class ScheduleScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  // 📢 ANNOUNCEMENT BANNER (Gikan sa Provider)
+                  // 📢 ANNOUNCEMENT BANNER
                   Container(
                     padding: const EdgeInsets.all(16),
                     margin: const EdgeInsets.only(bottom: 20),
@@ -61,7 +77,7 @@ class ScheduleScreen extends StatelessWidget {
                             children: [
                               const Text('Announcement', style: TextStyle(color: Color(0xFFFFA000), fontWeight: FontWeight.bold, fontSize: 14)),
                               const SizedBox(height: 4),
-                              Text(announcement, style: const TextStyle(color: Colors.white70, fontSize: 13)), // ✅ SHOW
+                              Text(announcement, style: const TextStyle(color: Colors.white70, fontSize: 13)),
                             ],
                           ),
                         ),
@@ -69,6 +85,7 @@ class ScheduleScreen extends StatelessWidget {
                     ),
                   ),
 
+                  // BANNER (In 2 days)
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(

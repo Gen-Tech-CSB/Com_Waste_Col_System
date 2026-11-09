@@ -64,6 +64,7 @@ Open `waste_db`, then Schemas, public, Tables (right-click Tables, Refresh). You
 | `report_photos` | Photo paths for each report (up to 3 per report) |
 | `report_status_history` | Status timeline of each report (who changed it, when, and the remarks) |
 | `schema_migrations` | Tracks which migration files were applied |
+| `collection_runs` | Stores daily collection runs, collection status, reason, and the user who marked the run. |
 
 After seeding: 2 barangays, 8 areas, 3 users (admin, collector, resident), and 16 schedules.
 The reports tables stay empty until reports are submitted.
@@ -79,6 +80,8 @@ The reports tables stay empty until reports are submitted.
 - `report_photos.report_id` references `reports.id` (deleted together with the report)
 - `report_status_history.report_id` references `reports.id` (deleted together with the report)
 - `report_status_history.changed_by` references `users.id`
+- `collection_runs.schedule_id` references `collection_schedules.id` — Links each collection run to its corresponding collection schedule. If a schedule is deleted, its related collection runs are also deleted (`ON DELETE CASCADE`).
+- `collection_runs.marked_by` references `users.id` — Identifies the user who marked the collection run as collected, partially collected, or not collected. This field can be `NULL` if the run has not been manually marked.
 
 ## Migrations
 

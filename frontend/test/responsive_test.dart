@@ -59,10 +59,19 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      await expectLater(
-        find.byType(ResidentHome),
-        matchesGoldenFile('goldens/resident_${width.toInt()}.png'),
+      expect(find.text('Your collection schedule'), findsOneWidget);
+      expect(
+        find.byType(NavigationBar),
+        width < 900 ? findsOneWidget : findsNothing,
       );
+      // These references were rendered on Windows. Linux uses different font
+      // rasterization; keep layout and interaction checks active on every OS.
+      if (Platform.isWindows) {
+        await expectLater(
+          find.byType(ResidentHome),
+          matchesGoldenFile('goldens/resident_${width.toInt()}.png'),
+        );
+      }
       final labels = width >= 900
           ? ['Report an issue', 'My reports', 'Sorting guide']
           : ['Report', 'My reports', 'Guide'];

@@ -45,7 +45,7 @@ jobs:
       - name: Run Flutter Tests
         run: |
           if [ -d test ] && find test -name '*_test.dart' | grep -q .; then
-            flutter test
+            flutter test --reporter expanded
           else
             echo "::error::No Flutter tests found in test/"
             exit 1

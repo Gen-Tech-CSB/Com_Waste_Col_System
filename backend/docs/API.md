@@ -161,3 +161,27 @@ Returns `total`, `by_status`, `by_category`, and `unassigned_open` (open reports
 
 ### GET /users/collectors (admin only)
 Lists collector accounts (`id`, `full_name`, `email`) for the assign dropdown.
+
+## Collection runs
+
+One run = one schedule on one date. Runs are created automatically for today's active schedules
+(Philippine time, Asia/Manila). A `pending` run whose `end_time` has passed becomes `missed`.
+Statuses: `pending`, `collected`, `partial`, `not_collected`, `missed`.
+
+### GET /runs/today (admin and collector)
+Today's runs with `area_name`, `barangay_name`, `start_time`, `end_time`, `waste_types`, `status`,
+`reason`, `marked_by_name`, and `marked_at`.
+
+### PATCH /runs/:id (collector and admin)
+```json
+{ "status": "not_collected", "reason": "Truck breakdown" }
+```
+`status`: `collected`, `partial`, or `not_collected`. `reason` (3+ characters) is required unless `collected`.
+A run that is `pending` or `missed` can be marked once. Responses: `200`, `400`, `403`, `404`,
+`409` already marked.
+
+### GET /runs (admin only)
+Query: `date` (YYYY-MM-DD, default today), `status`, `area_id`.
+
+### GET /runs/mine (resident only)
+Runs for the resident's own area for the last 7 days, to show "Collected at ..." in the app.

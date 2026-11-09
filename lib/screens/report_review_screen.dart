@@ -15,7 +15,8 @@ class ReportReviewScreen extends StatefulWidget {
 }
 
 class _ReportReviewScreenState extends State<ReportReviewScreen> {
-  String _currentStatus = 'Pending'; // Default status
+  String _currentStatus = 'Pending';
+  String _assignedCrew = 'Unassigned'; // ✅ Variable para sa Crew
   final TextEditingController _remarksController = TextEditingController();
 
   @override
@@ -54,7 +55,6 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
                   const Text('Photo Attached:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                   const SizedBox(height: 8),
                   
-                  // ✅ PICTURE SA BASURA (Gikan sa Internet)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
@@ -83,6 +83,30 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
               ),
             ),
             const SizedBox(height: 24),
+
+            // ✅ ASSIGN TO CREW DROPDOWN
+            const Text('Assign to Collection Crew', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              value: _assignedCrew,
+              dropdownColor: const Color(0xFF222B36),
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xFF222B36),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                prefixIcon: const Icon(Icons.group, color: Color(0xFF00B0FF)),
+              ),
+              items: ['Unassigned', 'Crew Alpha', 'Crew Bravo', 'Truck 1', 'Truck 2']
+                  .map((crew) => DropdownMenuItem(value: crew, child: Text(crew)))
+                  .toList(),
+              onChanged: (val) {
+                setState(() {
+                  _assignedCrew = val!;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
 
             // Update Status Dropdown
             const Text('Update Status', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -136,11 +160,13 @@ class _ReportReviewScreenState extends State<ReportReviewScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: () {
-                  // Mock save functionality
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Report updated to $_currentStatus'), backgroundColor: Colors.green),
+                    SnackBar(
+                      content: Text('Report updated to $_currentStatus and assigned to $_assignedCrew'), 
+                      backgroundColor: Colors.green
+                    ),
                   );
-                  Navigator.pop(context); // Mobalik sa Admin Dashboard
+                  Navigator.pop(context);
                 },
                 icon: const Icon(Icons.save),
                 label: const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),

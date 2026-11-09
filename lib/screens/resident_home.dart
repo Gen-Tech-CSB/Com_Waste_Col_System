@@ -26,12 +26,13 @@ class _ResidentHomeState extends State<ResidentHome> {
     return Scaffold(
       backgroundColor: const Color(0xFF161C24),
       appBar: AppBar(
+        automaticallyImplyLeading: false, // ✅ KINI ANG MOTANGGAL SA BACK ARROW (PANA)
         title: const Text('Community Waste'),
         backgroundColor: const Color(0xFF161C24),
+        elevation: 0,
+        centerTitle: true,
       ),
       body: _screens[_selectedIndex],
-      
-      // ✅ ANIMATED BOTTOM NAVIGATION
       bottomNavigationBar: Container(
         margin: const EdgeInsets.all(16),
         height: 70,
@@ -57,7 +58,6 @@ class _ResidentHomeState extends State<ResidentHome> {
     );
   }
 
-  // ✅ HELPER PARA SA ANIMATED NAV ITEM
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _selectedIndex == index;
     return GestureDetector(

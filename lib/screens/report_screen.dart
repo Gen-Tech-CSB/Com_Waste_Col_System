@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // ✅ IMPORT PARA SA DRAFT
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -11,10 +12,47 @@ class ReportScreen extends StatefulWidget {
 
 class _ReportScreenState extends State<ReportScreen> {
   final _descController = TextEditingController();
-  XFile? _imageFile; // Variable para sa picture
+  XFile? _imageFile;
   final ImagePicker _picker = ImagePicker();
 
-  // ✅ Function para mokuha og picture gikan sa Gallery
+  @override
+  void initState() {
+    super.initState();
+    _loadDraft(); // ✅ I-LOAD ANG DRAFT INIG OPEN
+  }
+
+  // ✅ FUNCTION PARA MA-LOAD ANG DRAFT
+  Future<void> _loadDraft() async {
+    final prefs = await SharedPreferences.getInstance();
+    final draft = prefs.getString('report_draft');
+    if (draft != null) {
+      setState(() {
+        _descController.text = draft;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Draft loaded automatically.'), backgroundColor: Colors.blue),
+        );
+      }
+    }
+  }
+
+  // ✅ FUNCTION PARA MA-SAVE ANG DRAFT
+  Future<void> _saveDraft() async {
+    if (_descController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please write a description first.'), backgroundColor: Colors.orange),
+      );
+      return;
+    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('report_draft', _descController.text);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Draft saved locally!'), backgroundColor: Colors.green),
+    );
+  }
+
   Future<void> _pickImage() async {
     try {
       final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -106,6 +144,24 @@ class _ReportScreenState extends State<ReportScreen> {
             
           const SizedBox(height: 32),
           
+          // ✅ SAVE DRAFT BUTTON
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.blueAccent,
+                side: const BorderSide(color: Colors.blueAccent, width: 1.5),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              onPressed: _saveDraft,
+              icon: const Icon(Icons.save),
+              label: const Text('Save as Draft', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // SUBMIT BUTTON
           SizedBox(
             height: 56,
             child: FilledButton.icon(
@@ -120,7 +176,8 @@ class _ReportScreenState extends State<ReportScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Report Submitted!'), backgroundColor: Color(0xFF00E676)),
                 );
-                // I-reset ang form human ma-submit
+                // Clear draft after submit
+                SharedPreferences.getInstance().then((prefs) => prefs.remove('report_draft'));
                 setState(() {
                   _imageFile = null;
                   _descController.clear();

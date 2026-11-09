@@ -1,6 +1,7 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const pool = require('./pool');
+const { describeDatabaseError } = require('./errors');
 
 const data = {
   'Barangay Uno': ['Purok 1', 'Purok 2', 'Purok 3', 'Purok 4'],
@@ -58,7 +59,7 @@ const plan = {
     }
     console.log('seed done');
   } catch (e) {
-    console.error('seed failed:', e.message);
+    console.error('seed failed:', describeDatabaseError(e));
     process.exitCode = 1;
   } finally {
     await pool.end();

@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "db:check": "node src/db/check.js",
     "dev": "node --watch server.js",
     "migrate": "node src/db/migrate.js",
     "seed": "node src/db/seed.js",

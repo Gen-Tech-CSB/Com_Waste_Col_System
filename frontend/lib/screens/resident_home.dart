@@ -1,3 +1,5 @@
+import '../services/api_client.dart';
+
 import 'package:flutter/material.dart';
 
 import '../widgets/ui.dart';
@@ -6,37 +8,64 @@ import 'report_screen.dart';
 import 'my_reports_screen.dart';
 import 'guide_screen.dart';
 import 'login_screen.dart';
+import 'profile_screen.dart';
+import 'settings_screen.dart';
 
 class ResidentHome extends StatefulWidget {
-  const ResidentHome({super.key});
+  final ApiClient? api;
+  const ResidentHome({super.key, this.api});
   @override
   State<ResidentHome> createState() => _ResidentHomeState();
 }
 
 class _ResidentHomeState extends State<ResidentHome> {
   int _selectedIndex = 0;
-  static const _labels = [
+  late final ApiClient _api = widget.api ?? ApiClient.instance;
+  static final _labels = [
     'Collection schedule',
     'Report an issue',
     'My reports',
     'Sorting guide',
+    'My profile',
   ];
-  static const _icons = [
+  static final _icons = [
     Icons.calendar_month_outlined,
     Icons.add_circle_outline,
     Icons.receipt_long_outlined,
     Icons.eco_outlined,
+    Icons.person_outline,
   ];
-  static const _screens = [
-    ScheduleScreen(),
-    ReportScreen(),
-    MyReportsScreen(),
-    GuideScreen(),
+  late final _screens = [
+    const ScheduleScreen(),
+    const ReportScreen(),
+    const MyReportsScreen(),
+    const GuideScreen(),
+    ProfileScreen(
+      api: _api,
+      onChanged: () {
+        if (mounted) setState(() {});
+      },
+    ),
   ];
 
-  void _logout() => Navigator.pushReplacement(
+  void _logout() {
+    _api.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => LoginScreen(api: widget.api)),
+    );
+  }
+
+  void _openSettings() => Navigator.push(
     context,
-    MaterialPageRoute(builder: (_) => const LoginScreen()),
+    MaterialPageRoute(
+      builder: (_) => SettingsScreen(
+        api: _api,
+        onOpenProfile: () {
+          if (mounted) setState(() => _selectedIndex = 4);
+        },
+      ),
+    ),
   );
 
   @override
@@ -44,19 +73,39 @@ class _ResidentHomeState extends State<ResidentHome> {
     builder: (context, constraints) {
       final wide = constraints.maxWidth >= 900;
       return Scaffold(
-        backgroundColor: Ui.background,
+        backgroundColor: Ui.of(context).background,
         appBar: wide
             ? null
             : AppBar(
-                backgroundColor: Ui.background,
-                foregroundColor: Colors.white,
+                backgroundColor: Ui.of(context).background,
+                foregroundColor: Ui.of(context).text,
                 centerTitle: false,
                 title: const Text(
                   'Community Waste',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
                 ),
-                leading: const Icon(Icons.recycling, color: Ui.green),
+                leading: Icon(Icons.recycling, color: Ui.of(context).green),
                 actions: [
+                  IconButton(
+                    tooltip: 'Open profile',
+                    onPressed: () => setState(() => _selectedIndex = 4),
+                    icon: CircleAvatar(
+                      radius: 16,
+                      backgroundColor: Ui.of(context).green,
+                      child: Icon(
+                        Icons.person_outline,
+                        color: Ui.of(context).onAccent,
+                        size: 19,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Settings',
+                    onPressed: _openSettings,
+                    icon: const Icon(Icons.settings_outlined),
+                  ),
                   IconButton(
                     tooltip: 'Sign out',
                     onPressed: _logout,
@@ -70,104 +119,137 @@ class _ResidentHomeState extends State<ResidentHome> {
               if (wide)
                 Container(
                   width: 248,
-                  decoration: const BoxDecoration(
-                    color: Ui.surface,
-                    border: Border(right: BorderSide(color: Ui.border)),
+                  decoration: BoxDecoration(
+                    color: Ui.of(context).surface,
+                    border: Border(
+                      right: BorderSide(color: Ui.of(context).border),
+                    ),
                   ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 18,
                     vertical: 32,
                   ),
                   child: Material(
-                    color: Ui.surface,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: Row(
-                            children: [
-                              Icon(Icons.recycling, color: Ui.green, size: 32),
-                              SizedBox(width: 10),
-                              Flexible(
-                                child: Text(
-                                  'Community\nWaste',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    height: 1.15,
+                    color: Ui.of(context).surface,
+                    child: LayoutBuilder(
+                      builder: (context, sidebar) => SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: sidebar.maxHeight,
+                          ),
+                          child: IntrinsicHeight(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.recycling,
+                                        color: Ui.of(context).green,
+                                        size: 32,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Flexible(
+                                        child: Text(
+                                          'Community\nWaste',
+                                          style: TextStyle(
+                                            color: Ui.of(context).text,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                            height: 1.15,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 48),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 14, bottom: 16),
-                          child: Text(
-                            'RESIDENT WORKSPACE',
-                            style: TextStyle(
-                              color: Ui.muted,
-                              fontSize: 10,
-                              letterSpacing: 1.8,
+                                const SizedBox(height: 48),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 14,
+                                    bottom: 16,
+                                  ),
+                                  child: Text(
+                                    'RESIDENT WORKSPACE',
+                                    style: TextStyle(
+                                      color: Ui.of(context).muted,
+                                      fontSize: 10,
+                                      letterSpacing: 1.8,
+                                    ),
+                                  ),
+                                ),
+                                for (var i = 0; i < _labels.length; i++)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: ListTile(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      selected: i == _selectedIndex,
+                                      selectedTileColor: Ui.of(context).green
+                                          .withValues(alpha: 0.12),
+                                      selectedColor: Ui.of(context).green,
+                                      iconColor: Ui.of(context).muted,
+                                      textColor: Ui.of(context).muted,
+                                      leading: Icon(_icons[i], size: 21),
+                                      title: Text(
+                                        _labels[i],
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      onTap: () =>
+                                          setState(() => _selectedIndex = i),
+                                    ),
+                                  ),
+                                ListTile(
+                                  leading: const Icon(Icons.settings_outlined),
+                                  title: const Text('Settings'),
+                                  textColor: Ui.of(context).muted,
+                                  iconColor: Ui.of(context).muted,
+                                  onTap: _openSettings,
+                                ),
+                                const Spacer(),
+                                SurfaceCard(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.spa_outlined,
+                                        color: Ui.of(context).green,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'Small habits.\nCleaner communities.',
+                                        style: TextStyle(
+                                          color: Ui.of(context).text,
+                                          height: 1.5,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                ListTile(
+                                  leading: const Icon(Icons.logout, size: 20),
+                                  title: const Text('Sign out'),
+                                  textColor: Ui.of(context).muted,
+                                  iconColor: Ui.of(context).muted,
+                                  onTap: _logout,
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                        for (var i = 0; i < _labels.length; i++)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: ListTile(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              selected: i == _selectedIndex,
-                              selectedTileColor: Ui.green.withValues(
-                                alpha: 0.12,
-                              ),
-                              selectedColor: Ui.green,
-                              iconColor: Ui.muted,
-                              textColor: Ui.muted,
-                              leading: Icon(_icons[i], size: 21),
-                              title: Text(
-                                _labels[i],
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              onTap: () => setState(() => _selectedIndex = i),
-                            ),
-                          ),
-                        const Spacer(),
-                        const SurfaceCard(
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(Icons.spa_outlined, color: Ui.green),
-                              SizedBox(height: 12),
-                              Text(
-                                'Small habits.\nCleaner communities.',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  height: 1.5,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ListTile(
-                          leading: const Icon(Icons.logout, size: 20),
-                          title: const Text('Sign out'),
-                          textColor: Ui.muted,
-                          iconColor: Ui.muted,
-                          onTap: _logout,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -178,37 +260,47 @@ class _ResidentHomeState extends State<ResidentHome> {
                       Container(
                         height: 76,
                         padding: const EdgeInsets.symmetric(horizontal: 36),
-                        decoration: const BoxDecoration(
-                          border: Border(bottom: BorderSide(color: Ui.border)),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: Ui.of(context).border),
+                          ),
                         ),
                         child: Row(
                           children: [
                             Text(
                               _labels[_selectedIndex],
-                              style: const TextStyle(
-                                color: Ui.muted,
+                              style: TextStyle(
+                                color: Ui.of(context).muted,
                                 fontSize: 13,
                               ),
                             ),
                             const Spacer(),
-                            const Icon(
+                            Icon(
                               Icons.location_on_outlined,
                               size: 16,
-                              color: Ui.muted,
+                              color: Ui.of(context).muted,
                             ),
                             const SizedBox(width: 6),
-                            const Text(
+                            Text(
                               'Your community',
-                              style: TextStyle(color: Ui.muted, fontSize: 12),
+                              style: TextStyle(
+                                color: Ui.of(context).muted,
+                                fontSize: 12,
+                              ),
                             ),
                             const SizedBox(width: 20),
-                            const CircleAvatar(
-                              radius: 17,
-                              backgroundColor: Ui.green,
-                              child: Icon(
-                                Icons.person_outline,
-                                size: 20,
-                                color: Ui.background,
+                            IconButton(
+                              tooltip: 'Open profile',
+                              onPressed: () =>
+                                  setState(() => _selectedIndex = 4),
+                              icon: CircleAvatar(
+                                radius: 17,
+                                backgroundColor: Ui.of(context).green,
+                                child: Icon(
+                                  Icons.person_outline,
+                                  size: 20,
+                                  color: Ui.of(context).onAccent,
+                                ),
                               ),
                             ),
                           ],
@@ -234,8 +326,8 @@ class _ResidentHomeState extends State<ResidentHome> {
         bottomNavigationBar: wide
             ? null
             : NavigationBar(
-                backgroundColor: Ui.surface,
-                indicatorColor: Ui.green.withValues(alpha: 0.18),
+                backgroundColor: Ui.of(context).surface,
+                indicatorColor: Ui.of(context).green.withValues(alpha: 0.18),
                 selectedIndex: _selectedIndex,
                 onDestinationSelected: (i) =>
                     setState(() => _selectedIndex = i),
@@ -244,13 +336,16 @@ class _ResidentHomeState extends State<ResidentHome> {
                     NavigationDestination(
                       icon: Icon(
                         _icons[i],
-                        color: _selectedIndex == i ? Ui.green : Ui.muted,
+                        color: _selectedIndex == i
+                            ? Ui.of(context).green
+                            : Ui.of(context).muted,
                       ),
-                      label: const [
+                      label: [
                         'Schedule',
                         'Report',
                         'My reports',
                         'Guide',
+                        'Profile',
                       ][i],
                     ),
                 ],

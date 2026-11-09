@@ -139,3 +139,16 @@ Query: `page`, `limit`, `status`, `category`, `area_id`. Returns `data` and `met
 ```
 Responses: `200` returns the updated report, `400` (`remarks` required when rejecting), `403`, `404`,
 `409` if the change is not allowed from the current status.
+### GET /reports/summary
+Requires an admin or collector Bearer token. Returns database-wide report counts:
+
+```json
+{"success":true,"data":{"total":0,"submitted":0,"under_review":0,"in_progress":0,"resolved":0,"rejected":0}}
+```
+
+Registration trims names/emails, normalizes email case, accepts only existing optional area IDs, and enforces password length of at least 8 characters and at most 72 UTF-8 bytes (bcrypt limit). Password hashes are never returned. Public registration always creates a resident.
+
+### PATCH /auth/me
+Requires a Bearer token. Updates the signed-in user's profile. Accepted fields: full_name (trimmed, 2–150 characters), phone (up to 20 characters or null), area_id (an existing positive area ID or null). Send at least one field. Other fields, including role, email and id, are rejected with 400. Returns the updated public profile; password hashes are excluded.
+
+GET /auth/me returns the signed-in user's public profile for the Profile page.

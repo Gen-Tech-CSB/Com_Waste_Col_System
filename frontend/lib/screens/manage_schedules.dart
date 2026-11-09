@@ -1,3 +1,5 @@
+import '../widgets/ui.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,17 +18,17 @@ class ManageSchedules extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF192626),
-          title: const Text(
+          backgroundColor: Ui.of(context).surface,
+          title: Text(
             'Add New Schedule',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Ui.of(context).text),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                dropdownColor: const Color(0xFF101A1A),
-                style: const TextStyle(color: Colors.white),
+                dropdownColor: Ui.of(context).background,
+                style: TextStyle(color: Ui.of(context).text),
                 initialValue: newDay,
                 items:
                     [
@@ -43,24 +45,24 @@ class ManageSchedules extends StatelessWidget {
                         )
                         .toList(),
                 onChanged: (val) => newDay = val!,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Day',
-                  labelStyle: TextStyle(color: Color(0xFFA7B8B2)),
+                  labelStyle: TextStyle(color: Ui.of(context).muted),
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: timeController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                style: TextStyle(color: Ui.of(context).text),
+                decoration: InputDecoration(
                   labelText: 'Time (e.g. 7:00 AM)',
-                  labelStyle: TextStyle(color: Color(0xFFA7B8B2)),
+                  labelStyle: TextStyle(color: Ui.of(context).muted),
                 ),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                dropdownColor: const Color(0xFF101A1A),
-                style: const TextStyle(color: Colors.white),
+                dropdownColor: Ui.of(context).background,
+                style: TextStyle(color: Ui.of(context).text),
                 initialValue: newType,
                 items:
                     [
@@ -75,9 +77,9 @@ class ManageSchedules extends StatelessWidget {
                         )
                         .toList(),
                 onChanged: (val) => newType = val!,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Waste Type',
-                  labelStyle: TextStyle(color: Color(0xFFA7B8B2)),
+                  labelStyle: TextStyle(color: Ui.of(context).muted),
                 ),
               ),
             ],
@@ -85,14 +87,14 @@ class ManageSchedules extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text(
+              child: Text(
                 'Cancel',
-                style: TextStyle(color: Color(0xFFA7B8B2)),
+                style: TextStyle(color: Ui.of(context).muted),
               ),
             ),
             FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFFB6EF86),
+                backgroundColor: Ui.of(context).green,
                 foregroundColor: Colors.black,
               ),
               onPressed: () {
@@ -116,7 +118,7 @@ class ManageSchedules extends StatelessWidget {
     final schedules = context.watch<ScheduleProvider>().schedules;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF101A1A),
+      backgroundColor: Ui.of(context).background,
       appBar: AppBar(title: const Text('Manage Schedules')),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -126,24 +128,21 @@ class ManageSchedules extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF192626),
+              color: Ui.of(context).surface,
               borderRadius: BorderRadius.circular(12),
             ),
             child: ListTile(
-              leading: const Icon(
-                Icons.calendar_today,
-                color: Color(0xFFB6EF86),
-              ),
+              leading: Icon(Icons.calendar_today, color: Ui.of(context).green),
               title: Text(
                 '${schedule.day} - ${schedule.time}',
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Ui.of(context).text),
               ),
               subtitle: Text(
                 schedule.type,
-                style: const TextStyle(color: Color(0xFFA7B8B2)),
+                style: TextStyle(color: Ui.of(context).muted),
               ),
               trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                icon: Icon(Icons.delete, color: Ui.of(context).danger),
                 onPressed: () =>
                     context.read<ScheduleProvider>().removeSchedule(index),
               ),
@@ -155,7 +154,7 @@ class ManageSchedules extends StatelessWidget {
         onPressed: () => _showAddDialog(context),
         icon: const Icon(Icons.add),
         label: const Text('Add Schedule'),
-        backgroundColor: const Color(0xFFB6EF86),
+        backgroundColor: Ui.of(context).green,
         foregroundColor: Colors.black,
       ),
     );

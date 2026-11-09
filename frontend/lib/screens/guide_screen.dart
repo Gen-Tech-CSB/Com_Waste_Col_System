@@ -1,3 +1,5 @@
+import '../widgets/ui.dart';
+
 import 'package:flutter/material.dart';
 
 class GuideScreen extends StatelessWidget {
@@ -8,69 +10,76 @@ class GuideScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const Text(
+        Text(
           'Waste Segregation Guide',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Ui.of(context).text,
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Tun-i unsaon pag-segregate sa basura.',
-          style: TextStyle(fontSize: 14, color: Color(0xFFA7B8B2)),
+          style: TextStyle(fontSize: 14, color: Ui.of(context).muted),
         ),
         const SizedBox(height: 24),
         _buildGuideCard(
+          context,
           'Biodegradable (Nabubulok)',
           'Mga basura nga madunot. (e.g., Dahon, Pagkaon)',
-          const Color(0xFFB6EF86),
+          Ui.of(context).green,
           Icons.eco,
         ),
         _buildGuideCard(
+          context,
           'Non-Biodegradable (Di-Nabubulok)',
           'Mga basura nga dili madunot. (e.g., Plastic, Styro)',
-          const Color(0xFF00B0FF),
+          Ui.of(context).blue,
           Icons.delete,
         ),
         _buildGuideCard(
+          context,
           'Recyclable (Nare-recycle)',
           'Mga basura nga pwede pa himuong bag-ong gamit. (e.g., Botelya, Lata)',
-          const Color(0xFFFFA000),
+          Ui.of(context).amber,
           Icons.recycling,
         ),
         _buildGuideCard(
+          context,
           'Special Waste (Mapanganib)',
           'Mga basura nga delikado. (e.g., Baterya, Ilaw)',
-          Colors.redAccent,
+          Ui.of(context).danger,
           Icons.warning,
         ),
         const SizedBox(height: 32),
-        const Text(
+        Text(
           'Emergency Contacts',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Ui.of(context).text,
           ),
         ),
         const SizedBox(height: 16),
         _buildContactCard(
+          context,
           'Barangay Waste Office',
           '0912-345-6789',
-          const Color(0xFFB6EF86),
+          Ui.of(context).green,
         ),
         _buildContactCard(
+          context,
           'LGU Sanitation Department',
           '(02) 8123-4567',
-          const Color(0xFF00B0FF),
+          Ui.of(context).blue,
         ),
       ],
     );
   }
 
   Widget _buildGuideCard(
+    BuildContext context,
     String title,
     String description,
     Color color,
@@ -80,7 +89,7 @@ class GuideScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF192626),
+        color: Ui.of(context).surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
@@ -111,10 +120,7 @@ class GuideScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFFA7B8B2),
-                  ),
+                  style: TextStyle(fontSize: 13, color: Ui.of(context).muted),
                 ),
               ],
             ),
@@ -124,20 +130,22 @@ class GuideScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContactCard(String title, String number, Color color) {
+  Widget _buildContactCard(
+    BuildContext context,
+    String title,
+    String number,
+    Color color,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF192626),
+        color: Ui.of(context).surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
         leading: Icon(Icons.phone, color: color),
-        title: Text(title, style: const TextStyle(color: Colors.white)),
-        subtitle: Text(
-          number,
-          style: const TextStyle(color: Color(0xFFA7B8B2)),
-        ),
+        title: Text(title, style: TextStyle(color: Ui.of(context).text)),
+        subtitle: Text(number, style: TextStyle(color: Ui.of(context).muted)),
       ),
     );
   }

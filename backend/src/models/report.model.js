@@ -13,6 +13,16 @@ const FROM = `FROM reports r
   JOIN areas a ON a.id = r.area_id
   JOIN barangays b ON b.id = a.barangay_id`;
 
+exports.summary = async () => {
+  const result = await pool.query(`SELECT COUNT(*)::int AS total,
+    COUNT(*) FILTER (WHERE status = 'submitted')::int AS submitted,
+    COUNT(*) FILTER (WHERE status = 'under_review')::int AS under_review,
+    COUNT(*) FILTER (WHERE status = 'in_progress')::int AS in_progress,
+    COUNT(*) FILTER (WHERE status = 'resolved')::int AS resolved,
+    COUNT(*) FILTER (WHERE status = 'rejected')::int AS rejected FROM reports`);
+  return result.rows[0];
+};
+
 exports.create = async (d) => {
   const client = await pool.connect();
   try {

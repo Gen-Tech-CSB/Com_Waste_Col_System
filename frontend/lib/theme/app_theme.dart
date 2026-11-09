@@ -8,7 +8,7 @@ class AppTheme {
 
   static const Color _darkBg = Color(0xFF101A1A);
   static const Color _darkSurface = Color(0xFF192626);
-  static const Color _lightBg = Color(0xFFF4F7F6);
+  static const Color _lightBg = Color(0xFFF4F7F4);
 
   static final ThemeData dark = _build(
     const ColorScheme.dark(
@@ -26,12 +26,12 @@ class AppTheme {
 
   static final ThemeData light = _build(
     const ColorScheme.light(
-      primary: Color(0xFF00A152), // darker green keeps contrast on white
+      primary: Color(0xFF326B36),
       onPrimary: Colors.white,
       secondary: Color(0xFF0288D1),
       onSecondary: Colors.white,
       surface: Colors.white,
-      onSurface: Color(0xFF1B2430),
+      onSurface: Color(0xFF18291E),
       error: Color(0xFFD32F2F),
     ),
     scaffold: _lightBg,
@@ -56,6 +56,7 @@ class AppTheme {
     );
 
     return ThemeData(
+      fontFamily: 'Roboto',
       useMaterial3: true,
       brightness: scheme.brightness,
       colorScheme: scheme,
@@ -67,6 +68,7 @@ class AppTheme {
         scrolledUnderElevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
+          fontFamily: 'Roboto',
           color: scheme.onSurface,
           fontSize: 18,
           fontWeight: FontWeight.bold,

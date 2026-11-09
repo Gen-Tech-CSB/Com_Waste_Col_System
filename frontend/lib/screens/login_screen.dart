@@ -1,4 +1,5 @@
-import 'dart:async';
+import '../services/api_client.dart';
+import '../services/form_validation.dart';
 
 import '../widgets/ui.dart';
 
@@ -8,43 +9,9 @@ import 'resident_home.dart';
 import 'admin_dashboard.dart';
 import 'register_screen.dart';
 
-// ---------------------------------------------------------------------------
-// AUTH LAYER (mock)
-// Replace the body of AuthService.login with a real call to your API:
-//   POST http://localhost:3000/api/auth/login  { email, password }
-// The server should return a JWT and the user's role (resident / admin).
-// ---------------------------------------------------------------------------
-enum UserRole { resident, admin }
-
-class AuthException implements Exception {
-  final String message;
-  const AuthException(this.message);
-}
-
-class AuthService {
-  static Future<UserRole> login({
-    required String email,
-    required String password,
-  }) async {
-    await Future.delayed(const Duration(seconds: 1)); // simulate network
-
-    // TEMPORARY mock accounts - remove once the backend is connected.
-    if (email.toLowerCase() == 'admin@waste.com' && password == 'admin123') {
-      return UserRole.admin;
-    }
-    if (email.toLowerCase() == 'resident@waste.com' &&
-        password == 'resident123') {
-      return UserRole.resident;
-    }
-    throw const AuthException('Incorrect email or password.');
-  }
-}
-
-// ---------------------------------------------------------------------------
-// LOGIN SCREEN
-// ---------------------------------------------------------------------------
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final ApiClient? api;
+  const LoginScreen({super.key, this.api});
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -71,20 +38,18 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      final role = await AuthService.login(
-        email: _emailCtrl.text.trim(),
-        password: _passCtrl.text,
-      ).timeout(const Duration(seconds: 10));
+      final api = widget.api ?? ApiClient.instance;
+      final user = await api.login(_emailCtrl.text, _passCtrl.text);
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => role == UserRole.admin
-              ? const AdminDashboard()
-              : const ResidentHome(),
+          builder: (_) => user['role'] != 'resident'
+              ? AdminDashboard(api: api)
+              : ResidentHome(api: api),
         ),
       );
-    } on AuthException catch (e) {
+    } on ApiException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
@@ -97,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Ui.background,
+    backgroundColor: Ui.of(context).background,
     body: SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -110,25 +75,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: const EdgeInsets.all(24),
                     padding: const EdgeInsets.all(48),
                     decoration: BoxDecoration(
-                      color: Ui.green,
+                      color: Ui.of(context).green,
                       borderRadius: BorderRadius.circular(32),
                     ),
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(
+                          Row(
                             children: [
                               Icon(
                                 Icons.recycling,
                                 size: 32,
-                                color: Ui.background,
+                                color: Ui.of(context).onAccent,
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               Text(
                                 'Community Waste',
                                 style: TextStyle(
-                                  color: Ui.background,
+                                  color: Ui.of(context).onAccent,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 18,
                                 ),
@@ -136,16 +101,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           const SizedBox(height: 48),
-                          const Icon(
+                          Icon(
                             Icons.spa_outlined,
                             size: 88,
-                            color: Color(0xFF3B602D),
+                            color: Ui.of(context).onAccent
+                                .withValues(alpha: 0.65),
                           ),
                           const SizedBox(height: 32),
-                          const Text(
+                          Text(
                             'A little care.\nA cleaner\ncommunity.',
                             style: TextStyle(
-                              color: Ui.background,
+                              color: Ui.of(context).onAccent,
                               fontSize: 48,
                               height: 1.1,
                               letterSpacing: -2,
@@ -153,19 +119,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          const Text(
+                          Text(
                             'Stay on top of collections, report issues, and build better waste habits together.',
                             style: TextStyle(
-                              color: Color(0xFF36512D),
+                              color: Ui.of(context).onAccent
+                                  .withValues(alpha: 0.8),
                               fontSize: 16,
                               height: 1.6,
                             ),
                           ),
                           const SizedBox(height: 48),
-                          const Text(
+                          Text(
                             'SORT SMART. LIVE CLEAN.',
                             style: TextStyle(
-                              color: Ui.background,
+                              color: Ui.of(context).onAccent,
                               fontSize: 10,
                               letterSpacing: 2,
                               fontWeight: FontWeight.w700,
@@ -189,12 +156,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               if (!wide) ...[
-                                const Align(
+                                Align(
                                   alignment: Alignment.centerLeft,
                                   child: Icon(
                                     Icons.recycling,
                                     size: 42,
-                                    color: Ui.green,
+                                    color: Ui.of(context).green,
                                   ),
                                 ),
                                 const SizedBox(height: 32),
@@ -223,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ],
                               TextFormField(
                                 controller: _emailCtrl,
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(color: Ui.of(context).text),
                                 keyboardType: TextInputType.emailAddress,
                                 autofillHints: const [AutofillHints.username],
                                 textInputAction: TextInputAction.next,
@@ -236,17 +203,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   if (value == null || value.trim().isEmpty) {
                                     return 'Please enter your email address.';
                                   }
-                                  if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
-                                      .hasMatch(value.trim())) {
-                                    return 'Enter a valid email address.';
-                                  }
-                                  return null;
+                                  return validateEmail(value);
                                 },
                               ),
                               const SizedBox(height: 20),
                               TextFormField(
                                 controller: _passCtrl,
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(color: Ui.of(context).text),
                                 obscureText: _obscure,
                                 autofillHints: const [AutofillHints.password],
                                 onFieldSubmitted: (_) => _submit(),
@@ -269,8 +232,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 validator: (value) =>
                                     value == null || value.isEmpty
                                     ? 'Please enter your password.'
-                                    : value.length < 6
-                                    ? 'Password must be at least 6 characters.'
+                                    : value.length < 8
+                                    ? 'Password must be at least 8 characters.'
                                     : null,
                               ),
                               const SizedBox(height: 28),
@@ -299,9 +262,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 alignment: WrapAlignment.center,
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
-                                  const Text(
+                                  Text(
                                     "New to the community?",
-                                    style: TextStyle(color: Ui.muted),
+                                    style: TextStyle(
+                                      color: Ui.of(context).muted,
+                                    ),
                                   ),
                                   TextButton(
                                     onPressed: _loading
@@ -309,8 +274,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         : () => Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (_) =>
-                                                  const RegisterScreen(),
+                                              builder: (_) => RegisterScreen(
+                                                api: widget.api,
+                                              ),
                                             ),
                                           ),
                                     child: const Text('Create an account'),

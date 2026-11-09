@@ -108,6 +108,11 @@ exports.listAll = async (req, res) => {
   try { await sendList(res, q.data, null); } catch (e) { serverError(e, res); }
 };
 
+exports.summary = async (req, res) => {
+  try { res.json({ success: true, data: await Report.summary() }); }
+  catch (e) { serverError(e, res); }
+};
+
 exports.getOne = async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) return res.status(404).json({ success: false, message: 'Report not found' });

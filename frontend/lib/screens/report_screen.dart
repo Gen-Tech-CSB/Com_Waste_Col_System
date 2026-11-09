@@ -30,31 +30,31 @@ class _ReportScreenState extends State<ReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Issue details',
               style: TextStyle(
-                color: Colors.white,
+                color: Ui.of(context).text,
                 fontSize: 19,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Tell us what happened so the team can understand the issue.',
-              style: TextStyle(color: Ui.muted, height: 1.5),
+              style: TextStyle(color: Ui.of(context).muted, height: 1.5),
             ),
             const SizedBox(height: 24),
             DropdownButtonFormField<String>(
               isExpanded: true,
-              dropdownColor: Ui.surface,
-              style: const TextStyle(color: Colors.white),
+              dropdownColor: Ui.of(context).surface,
+              style: TextStyle(color: Ui.of(context).text),
               decoration: const InputDecoration(
                 labelText: 'Category',
                 prefixIcon: Icon(Icons.category_outlined),
               ),
-              hint: const Text(
+              hint: Text(
                 'Select an issue',
-                style: TextStyle(color: Ui.muted),
+                style: TextStyle(color: Ui.of(context).muted),
               ),
               items: const [
                 DropdownMenuItem(value: 'missed', child: Text('Missed pickup')),
@@ -70,7 +70,7 @@ class _ReportScreenState extends State<ReportScreen> {
               controller: _descController,
               maxLines: 5,
               maxLength: 1000,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Ui.of(context).text),
               decoration: const InputDecoration(
                 labelText: 'Description',
                 alignLabelWithHint: true,

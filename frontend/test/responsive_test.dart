@@ -73,12 +73,17 @@ void main() {
         );
       }
       final labels = width >= 900
-          ? ['Report an issue', 'My reports', 'Sorting guide']
-          : ['Report', 'My reports', 'Guide'];
+          ? ['Report an issue', 'My reports', 'Sorting guide', 'My profile']
+          : ['Report', 'My reports', 'Guide', 'Profile'];
       for (final label in labels) {
         await tester.tap(find.text(label).first);
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: label);
+      }
+      if (width >= 900) {
+        tester.view.physicalSize = Size(width, 650);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: 'Short desktop window');
       }
     });
     testWidgets('Admin overview scrolls at $width', (tester) async {

@@ -19,3 +19,18 @@ exports.create = async ({ full_name, email, password_hash, area_id, phone }) => 
     [full_name, email.toLowerCase(), password_hash, area_id ?? null, phone ?? null]);
   return r.rows[0];
 };
+
+exports.updateProfile = async (id, changes) => {
+  const values = [id];
+  const updates = [];
+  for (const field of ['full_name', 'phone', 'area_id']) {
+    if (Object.hasOwn(changes, field)) {
+      values.push(changes[field]);
+      updates.push(`${field} = $${values.length}`);
+    }
+  }
+  const result = await pool.query(
+    `UPDATE users SET ${updates.join(', ')} WHERE id = $1
+     RETURNING id, full_name, email, role, area_id, phone`, values);
+  return result.rows[0];
+};

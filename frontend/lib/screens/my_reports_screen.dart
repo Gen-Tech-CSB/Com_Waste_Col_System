@@ -1,3 +1,5 @@
+import '../widgets/ui.dart';
+
 import 'package:flutter/material.dart';
 
 class MyReportsScreen extends StatefulWidget {
@@ -23,12 +25,12 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const Text(
+        Text(
           'My Reports',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Ui.of(context).text,
           ),
         ),
         const SizedBox(height: 16),
@@ -37,9 +39,9 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF192626),
+            color: Ui.of(context).surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFF2C3D3A)),
+            border: Border.all(color: Ui.of(context).border),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,12 +51,12 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 runSpacing: 12,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'Missed Pickup',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Ui.of(context).text,
                     ),
                   ),
                   Container(
@@ -63,13 +65,13 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFB6EF86).withValues(alpha: 0.1),
+                      color: Ui.of(context).green.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Resolved',
                       style: TextStyle(
-                        color: Color(0xFFB6EF86),
+                        color: Ui.of(context).green,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
@@ -78,19 +80,19 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 ],
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Poblacion - Zone 1',
-                style: TextStyle(color: Color(0xFFA7B8B2), fontSize: 13),
+                style: TextStyle(color: Ui.of(context).muted, fontSize: 13),
               ),
               const SizedBox(height: 16),
 
-              const Divider(color: Colors.white24),
+              Divider(color: Ui.of(context).border),
               const SizedBox(height: 8),
 
               // 🌟 RESIDENT FEEDBACK SECTION
-              const Text(
+              Text(
                 'Rate this service:',
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+                style: TextStyle(color: Ui.of(context).muted, fontSize: 14),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -99,7 +101,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                   return IconButton(
                     icon: Icon(
                       index < _rating ? Icons.star : Icons.star_border,
-                      color: const Color(0xFFFFA000),
+                      color: Ui.of(context).amber,
                       size: 32,
                     ),
                     onPressed: () {
@@ -115,13 +117,13 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
               // Comment Box
               TextField(
                 controller: _feedbackController,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Ui.of(context).text),
                 maxLines: 2,
                 decoration: InputDecoration(
                   hintText: 'Leave a comment (optional)...',
-                  hintStyle: const TextStyle(color: Color(0xFFA7B8B2)),
+                  hintStyle: TextStyle(color: Ui.of(context).muted),
                   filled: true,
-                  fillColor: const Color(0xFF101A1A),
+                  fillColor: Ui.of(context).background,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -136,7 +138,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 height: 48,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFB6EF86),
+                    backgroundColor: Ui.of(context).green,
                     foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

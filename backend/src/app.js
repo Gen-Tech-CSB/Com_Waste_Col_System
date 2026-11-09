@@ -28,6 +28,19 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads'), {
 }));
 app.use('/api/reports', require('./routes/report.routes'));
 
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, message: 'API endpoint not found' });
+});
+
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.parse.failed')
+    return res.status(400).json({ success: false, message: 'Invalid JSON request' });
+  if (err.type === 'entity.too.large')
+    return res.status(413).json({ success: false, message: 'Request is too large' });
+  console.error(err.message);
+  res.status(500).json({ success: false, message: 'Server error' });
+});
+
 
 
 module.exports = app;

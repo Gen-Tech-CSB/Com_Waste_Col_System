@@ -25,15 +25,15 @@ class ScheduleScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Ui.green,
+            color: Ui.of(context).green,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
+              Icon(
                 Icons.local_shipping_outlined,
-                color: Ui.background,
+                color: Ui.of(context).onAccent,
                 size: 36,
               ),
               const SizedBox(width: 18),
@@ -41,11 +41,11 @@ class ScheduleScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'COLLECTION REMINDER',
                       style: TextStyle(
                         fontSize: 10,
-                        color: Ui.background,
+                        color: Ui.of(context).onAccent,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.8,
                       ),
@@ -55,9 +55,9 @@ class ScheduleScreen extends StatelessWidget {
                       schedules.isEmpty
                           ? 'No collections scheduled'
                           : '${schedules.first.day} collection',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 25,
-                        color: Ui.background,
+                        color: Ui.of(context).onAccent,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -66,12 +66,18 @@ class ScheduleScreen extends StatelessWidget {
                       schedules.isEmpty
                           ? 'Check back for updates from your community.'
                           : 'Collection window: ${schedules.first.time}',
-                      style: const TextStyle(color: Ui.background, height: 1.5),
+                      style: TextStyle(
+                        color: Ui.of(context).onAccent,
+                        height: 1.5,
+                      ),
                     ),
                     const SizedBox(height: 6),
-                    const Text(
+                    Text(
                       'Have your sorted waste ready before collection begins.',
-                      style: TextStyle(color: Color(0xFF36512D), height: 1.5),
+                      style: TextStyle(
+                        color: Ui.of(context).onAccent.withValues(alpha: 0.8),
+                        height: 1.5,
+                      ),
                     ),
                   ],
                 ),
@@ -84,23 +90,26 @@ class ScheduleScreen extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.campaign_outlined, color: Color(0xFFE8C783)),
+              Icon(Icons.campaign_outlined, color: Ui.of(context).amber),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Community update',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Ui.of(context).text,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       announcement,
-                      style: const TextStyle(color: Ui.muted, height: 1.5),
+                      style: TextStyle(
+                        color: Ui.of(context).muted,
+                        height: 1.5,
+                      ),
                     ),
                   ],
                 ),
@@ -109,18 +118,18 @@ class ScheduleScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 32),
-        const Text(
+        Text(
           'Weekly collections',
           style: TextStyle(
-            color: Colors.white,
+            color: Ui.of(context).text,
             fontSize: 19,
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 6),
-        const Text(
+        Text(
           'Keep each waste type in a separate, securely closed bag.',
-          style: TextStyle(color: Ui.muted, height: 1.5),
+          style: TextStyle(color: Ui.of(context).muted, height: 1.5),
         ),
         const SizedBox(height: 18),
         LayoutBuilder(
@@ -140,16 +149,16 @@ class ScheduleScreen extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.calendar_today_outlined,
-                                color: Ui.green,
+                                color: Ui.of(context).green,
                                 size: 20,
                               ),
                               const Spacer(),
                               Text(
                                 schedule.day.toUpperCase(),
-                                style: const TextStyle(
-                                  color: Ui.muted,
+                                style: TextStyle(
+                                  color: Ui.of(context).muted,
                                   fontSize: 10,
                                   letterSpacing: 1.5,
                                 ),
@@ -159,8 +168,8 @@ class ScheduleScreen extends StatelessWidget {
                           const SizedBox(height: 22),
                           Text(
                             schedule.day,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Ui.of(context).text,
                               fontSize: 23,
                               fontWeight: FontWeight.w600,
                             ),
@@ -168,7 +177,7 @@ class ScheduleScreen extends StatelessWidget {
                           const SizedBox(height: 6),
                           Text(
                             schedule.time,
-                            style: const TextStyle(color: Ui.muted),
+                            style: TextStyle(color: Ui.of(context).muted),
                           ),
                           const SizedBox(height: 20),
                           Container(
@@ -177,13 +186,14 @@ class ScheduleScreen extends StatelessWidget {
                               vertical: 7,
                             ),
                             decoration: BoxDecoration(
-                              color: Ui.green.withValues(alpha: 0.1),
+                              color: Ui.of(context).green
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               schedule.type,
-                              style: const TextStyle(
-                                color: Ui.green,
+                              style: TextStyle(
+                                color: Ui.of(context).green,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -198,22 +208,26 @@ class ScheduleScreen extends StatelessWidget {
           },
         ),
         if (schedules.isEmpty)
-          const SurfaceCard(
+          SurfaceCard(
             child: Text(
               'Your community has no scheduled collections yet.',
-              style: TextStyle(color: Ui.muted),
+              style: TextStyle(color: Ui.of(context).muted),
             ),
           ),
         const SizedBox(height: 28),
-        const Row(
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.tips_and_updates_outlined, size: 18, color: Ui.muted),
-            SizedBox(width: 10),
+            Icon(
+              Icons.tips_and_updates_outlined,
+              size: 18,
+              color: Ui.of(context).muted,
+            ),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 'Rinse recyclable containers and keep them dry before disposal.',
-                style: TextStyle(color: Ui.muted, height: 1.5),
+                style: TextStyle(color: Ui.of(context).muted, height: 1.5),
               ),
             ),
           ],

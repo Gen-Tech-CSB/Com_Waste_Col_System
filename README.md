@@ -68,8 +68,8 @@ Admin Login:
 - Password: admin123
 
 Development Team
-- Elopre and Bagsican - Frontend Developers (Flutter UI, State Management, Features)
-- Backend Developer Name - Backend Developer (Node.js and PostgreSQL - In Progress)
+- Elopre - Frontend Developers (Flutter UI, State Management, Features)
+- Bagsican - Backend Developer (Node.js and PostgreSQL - In Progress)
 - Cinco - Team Leader
 - Quezon - Project Manager
 - Tomogsok - Quality Assurance

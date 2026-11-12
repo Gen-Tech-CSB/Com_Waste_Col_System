@@ -1,0 +1,1888 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Community Waste Collection System Guide</title>
+  <meta name="description"
+    content="Project setup commands, features, database connections, testing and troubleshooting.">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17251d;
+      --muted: #526057;
+      --green: #285e36;
+      --line: #d7dfd9;
+      --paper: #fff;
+      --bg: #f3f6f3
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 85px
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.65
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #17291e;
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .toolbar span {
+      font-size: 13px;
+      letter-spacing: .3px
+    }
+
+    .toolbar button {
+      border: 1px solid #a8c7af;
+      background: #fff;
+      color: #17291e;
+      padding: 8px 16px;
+      border-radius: 7px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer
+    }
+
+    .toolbar a {
+      color: #dcf1df;
+      font-size: 13px
+    }
+
+    main {
+      max-width: 1050px;
+      margin: 32px auto 56px;
+      background: var(--paper);
+      padding: 52px 64px;
+      border: 1px solid var(--line);
+      border-radius: 12px
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #000;
+      line-height: 1.25;
+      font-weight: 700
+    }
+
+    h1 {
+      font-size: 34px;
+      letter-spacing: -.9px;
+      margin: 0 0 16px
+    }
+
+    h2 {
+      font-size: 23px;
+      margin: 42px 0 16px;
+      scroll-margin-top: 85px
+    }
+
+    h3 {
+      font-size: 17px;
+      margin: 26px 0 12px
+    }
+
+    p {
+      margin: 0 0 15px
+    }
+
+    li {
+      margin: 7px 0
+    }
+
+    ul,
+    ol {
+      padding-left: 24px;
+      margin: 10px 0 20px
+    }
+
+    strong {
+      font-weight: 700
+    }
+
+    a {
+      color: var(--green);
+      text-underline-offset: 3px;
+      overflow-wrap: anywhere
+    }
+
+    .contents {
+      margin: 30px 0 38px;
+      padding: 24px 0
+    }
+
+    .contents h2 {
+      margin-top: 0;
+      font-size: 20px
+    }
+
+    .contents ol {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 28px;
+      list-style: none;
+      padding: 0
+    }
+
+    .contents li {
+      margin: 0;
+      line-height: 1.4;
+      font-size: 13px
+    }
+
+    .contents a {
+      text-decoration: none
+    }
+
+    .contents a:hover {
+      text-decoration: underline
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: .9em;
+      background: #eef2ef;
+      padding: 2px 5px;
+      border-radius: 3px;
+      overflow-wrap: anywhere
+    }
+
+    .code-block {
+      margin: 17px 0 22px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      overflow: hidden;
+      background: #f5f7f5
+    }
+
+    .code-label {
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .copy {
+      border: 0;
+      background: transparent;
+      color: var(--green);
+      font: inherit;
+      letter-spacing: 0;
+      text-transform: none;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 2px 8px
+    }
+
+    pre {
+      margin: 0;
+      padding: 16px;
+      overflow-x: auto;
+      line-height: 1.55;
+      font-size: 12px
+    }
+
+    pre code {
+      padding: 0;
+      background: transparent;
+      border-radius: 0;
+      white-space: pre;
+      font-size: inherit;
+      overflow-wrap: normal
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 18px 0 24px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      line-height: 1.5
+    }
+
+    th,
+    td {
+      border: 1px solid #d9d9d9;
+      padding: 11px 13px;
+      vertical-align: middle;
+      text-align: left;
+      overflow-wrap: anywhere
+    }
+
+    th {
+      background: #243a2c;
+      color: #fff;
+      font-weight: 700
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f5f7f5
+    }
+
+    table td:first-child {
+      font-weight: 600
+    }
+
+    table code {
+      background: transparent;
+      padding: 0
+    }
+
+    .bottom {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 44px;
+      padding-top: 16px
+    }
+
+    .bottom a {
+      margin-right: 16px
+    }
+
+    :focus-visible {
+      outline: 3px solid #679273;
+      outline-offset: 3px
+    }
+
+    @media(max-width:760px) {
+      body {
+        font-size: 14px
+      }
+
+      .toolbar {
+        padding: 10px 16px
+      }
+
+      .toolbar span {
+        max-width: 180px
+      }
+
+      main {
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        padding: 30px 20px
+      }
+
+      h1 {
+        font-size: 29px
+      }
+
+      h2 {
+        font-size: 21px
+      }
+
+      .contents ol {
+        grid-template-columns: 1fr
+      }
+
+      pre {
+        font-size: 11px;
+        padding: 12px
+      }
+
+      th,
+      td {
+        padding: 9px;
+        font-size: 12px
+      }
+    }
+
+    @page {
+      size: A4;
+      margin: 17mm 16mm 18mm
+    }
+
+    @media print {
+      html {
+        scroll-behavior: auto
+      }
+
+      body {
+        background: #fff;
+        color: #000;
+        font-size: 10.5pt;
+        line-height: 1.45
+      }
+
+      .toolbar,
+      .copy,
+      .bottom {
+        display: none
+      }
+
+      main {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0
+      }
+
+      h1 {
+        font-size: 25pt
+      }
+
+      h2 {
+        font-size: 17pt;
+        margin-top: 24pt;
+        break-after: avoid
+      }
+
+      h3 {
+        font-size: 12.5pt;
+        break-after: avoid
+      }
+
+      p {
+        margin-bottom: 9pt;
+        orphans: 3;
+        widows: 3
+      }
+
+      a {
+        color: #000
+      }
+
+      .contents {
+        padding: 8pt 0;
+        margin: 16pt 0 22pt
+      }
+
+      .contents ol {
+        gap: 5pt 20pt
+      }
+
+      .contents li {
+        font-size: 9pt
+      }
+
+      .code-block {
+        break-inside: avoid;
+        margin: 10pt 0 13pt;
+        border-radius: 0
+      }
+
+      .code-label {
+        padding: 4pt 8pt;
+        font-size: 7.5pt
+      }
+
+      pre {
+        padding: 9pt;
+        font-size: 8.3pt;
+        line-height: 1.4;
+        overflow: visible
+      }
+
+      pre code {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere
+      }
+
+      .table-wrap {
+        overflow: visible;
+        margin: 11pt 0 15pt
+      }
+
+      table {
+        font-size: 8.7pt
+      }
+
+      thead {
+        display: table-header-group
+      }
+
+      tr {
+        break-inside: avoid
+      }
+
+      th,
+      td {
+        padding: 7pt 8pt
+      }
+
+      th {
+        background: #e6ebe7;
+        color: #000
+      }
+
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="toolbar"><span>Community Waste Documentation</span>
+    <div><a href="QUICK_START.html">Quick start</a> &nbsp; <button type="button" onclick="window.print()">Print or save
+        as PDF</button></div>
+  </div>
+  <main>
+    <h1 id="community-waste-collection-system-guide">Community Waste Collection System Guide</h1>
+    <p>Setup Commands Features and Troubleshooting</p>
+    <p>Documentation date: 11 November 2026<br>Application version: 1.0.0+1<br>Documented source: commit a129dbd plus
+      subsequent local interface updates on branch ci/cd_workflow<br>Repository: <a
+        href="https://github.com/Gen-Tech-CSB/Com_Waste_Col_System">https://github.com/Gen-Tech-CSB/Com_Waste_Col_System</a>
+    </p>
+    <p>This guide explains how to run, use, test, and maintain the current project. It is written for the project team,
+      including members who run only the frontend while a teammate runs the backend and database. Commands use Windows
+      PowerShell unless a different operating system is named.</p>
+    <p><strong>Start with Section 4 if your teammate already runs the backend. Start with Section 5 if you will run the
+        backend and database yourself.</strong> You do not need PostgreSQL on every computer.</p>
+    <p>The feature table describes the actual implementation. Several resident screens still use demonstration data even
+      though account creation, login, profiles, and admin report management use the backend.</p>
+    <nav class="contents" aria-label="Contents">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#1-how-the-system-works">1 How the system works</a></li>
+        <li><a href="#2-project-folders-and-terminal-basics">2 Project folders and terminal basics</a></li>
+        <li><a href="#3-software-requirements">3 Software requirements</a></li>
+        <li><a href="#4-run-only-the-frontend-using-a-teammates-backend">4 Run only the frontend using a teammate&#39;s
+            backend</a></li>
+        <li><a href="#5-run-the-full-system-on-one-development-computer">5 Run the full system on one development
+            computer</a></li>
+        <li><a href="#6-what-each-backend-command-does">6 What each backend command does</a></li>
+        <li><a href="#7-current-features-and-their-status">7 Current features and their status</a></li>
+        <li><a href="#8-accounts-roles-and-admin-access">8 Accounts roles and admin access</a></li>
+        <li><a href="#9-create-an-account-and-sign-in">9 Create an account and sign in</a></li>
+        <li><a href="#10-profile-settings-and-appearance">10 Profile settings and appearance</a></li>
+        <li><a href="#11-admin-dashboard-and-report-workflow">11 Admin dashboard and report workflow</a></li>
+        <li><a href="#12-android-and-desktop-commands">12 Android and desktop commands</a></li>
+        <li><a href="#13-build-distributable-files">13 Build distributable files</a></li>
+        <li><a href="#14-test-and-verify-the-project">14 Test and verify the project</a></li>
+        <li><a href="#15-git-and-github-commands">15 Git and GitHub commands</a></li>
+        <li><a href="#16-what-github-actions-runs">16 What GitHub Actions runs</a></li>
+        <li><a href="#17-deploying-a-shared-website">17 Deploying a shared website</a></li>
+        <li><a href="#18-database-access-and-structure">18 Database access and structure</a></li>
+        <li><a href="#19-api-reference">19 API reference</a></li>
+        <li><a href="#20-troubleshooting">20 Troubleshooting</a></li>
+        <li><a href="#21-team-handoff-checklist">21 Team handoff checklist</a></li>
+        <li><a href="#22-official-references-and-project-references">22 Official references and project references</a>
+        </li>
+      </ol>
+    </nav>
+    <h2 id="1-how-the-system-works">1 How the system works</h2>
+    <p>The project has three running components:</p>
+    <div class="code-block">
+      <div class="code-label"><span>text</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>Browser or Android or desktop app
+                  |
+                  | HTTP requests to API_BASE_URL
+                  v
+          Express backend API
+                  |
+                  | DATABASE_URL kept on the backend
+                  v
+           PostgreSQL database
+
+pgAdmin manages PostgreSQL.
+GitHub stores code and runs automated checks.</code></pre>
+    </div>
+    <ul>
+      <li><strong>Frontend:</strong> a Flutter application. It displays the interface and sends supported requests to
+        the backend.</li>
+      <li><strong>Backend:</strong> a Node.js and Express server. It checks input, authenticates users, and reads or
+        writes database records.</li>
+      <li><strong>PostgreSQL:</strong> stores accounts, collection areas, schedules, reports, photos, and report
+        history.</li>
+      <li><strong>pgAdmin:</strong> a management application used to inspect and administer PostgreSQL. It is not the
+        database server itself.</li>
+      <li><strong>GitHub Actions:</strong> builds and tests code. The current workflow does not deploy a live backend or
+        connect automatically to the team&#39;s database.</li>
+    </ul>
+    <p>When a frontend connects to a teammate&#39;s backend, account registration is saved in the database configured on
+      that teammate&#39;s backend. Your own computer does not need a database.</p>
+    <h3 id="addresses-and-ports">Addresses and ports</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Address or port</th>
+            <th scope="col">Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>localhost</td>
+            <td>The computer running that particular app or command</td>
+          </tr>
+          <tr>
+            <td>3000</td>
+            <td>Default backend API port</td>
+          </tr>
+          <tr>
+            <td>5432</td>
+            <td>Usual PostgreSQL server port</td>
+          </tr>
+          <tr>
+            <td>8080</td>
+            <td>Frontend web-server port used in this guide</td>
+          </tr>
+          <tr>
+            <td>10.0.2.2</td>
+            <td>Android emulator address for the host computer</td>
+          </tr>
+          <tr>
+            <td>192.168.254.127</td>
+            <td>Example teammate backend address used during development; verify it before reuse</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Two different settings have different jobs.</strong> The frontend&#39;s <code>API_BASE_URL</code> points
+      to the backend server. The backend&#39;s <code>DATABASE_URL</code> points to PostgreSQL. Never put a database
+      connection string into the frontend.</p>
+    <h2 id="2-project-folders-and-terminal-basics">2 Project folders and terminal basics</h2>
+    <div class="code-block">
+      <div class="code-label"><span>text</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>Com_Waste_Col_System/
+  .github/workflows/ci.yml     GitHub checks and build jobs
+  backend/
+    .env.example              Configuration template
+    package.json              Backend commands
+    server.js                 Server entry point
+    src/
+      controllers/            Request handlers and validation
+      db/                     Connection checks, migrations and seed
+      middleware/             Authentication and uploads
+      models/                 Database queries
+      routes/                 API endpoint registration
+    docs/                     API and database reference
+    test/                     Backend tests
+  frontend/
+    pubspec.yaml              Flutter dependencies and version
+    lib/
+      screens/                Login, register, home, admin, profile, settings
+      providers/              Theme and demonstration data state
+      services/               API client, address configuration, validation
+      theme/                  Light and dark themes
+      widgets/                Shared interface elements
+    test/                     Flutter tests and Windows image references
+    web/ android/ windows/ linux/ macos/
+  docs/                       This guide and quick-start instructions</code></pre>
+    </div>
+    <p>The <strong>project folder</strong> contains <code>backend</code> and <code>frontend</code>. The <strong>Flutter
+        folder</strong> is <code>frontend</code>, where <code>pubspec.yaml</code> is located.</p>
+    <p>Check your current folder:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>Get-Location
+Get-ChildItem</code></pre>
+    </div>
+    <p>From the project folder, enter the frontend:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>cd frontend</code></pre>
+    </div>
+    <p>From the backend folder, move to the frontend:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>cd ..\frontend</code></pre>
+    </div>
+    <p>Move one folder up:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>cd ..</code></pre>
+    </div>
+    <p>Run commands one at a time. Do not copy the <code>PS C:\...\&gt;</code> prompt. Keep a long command on one line,
+      including the complete <code>--dart-define</code> option. Browser links, Markdown brackets, and spaces do not
+      belong inside an API address.</p>
+    <h2 id="3-software-requirements">3 Software requirements</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Component</th>
+            <th scope="col">Needed by</th>
+            <th scope="col">Requirements</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Flutter SDK</td>
+            <td>Anyone running or building the frontend</td>
+            <td>Flutter with a bundled Dart version satisfying the project&#39;s ^3.13.5 requirement</td>
+          </tr>
+          <tr>
+            <td>Chrome or Edge</td>
+            <td>Web developers and testers</td>
+            <td>A supported browser</td>
+          </tr>
+          <tr>
+            <td>Node.js and npm</td>
+            <td>Backend owner</td>
+            <td>Node.js 22 matches the current GitHub workflow</td>
+          </tr>
+          <tr>
+            <td>PostgreSQL</td>
+            <td>Database owner</td>
+            <td>A reachable PostgreSQL server; CI uses PostgreSQL 16</td>
+          </tr>
+          <tr>
+            <td>pgAdmin</td>
+            <td>Database administrator</td>
+            <td>Optional graphical database management tool</td>
+          </tr>
+          <tr>
+            <td>Git</td>
+            <td>Team members exchanging source code</td>
+            <td>Access to the GitHub repository</td>
+          </tr>
+          <tr>
+            <td>Android tools</td>
+            <td>Android developers</td>
+            <td>Android SDK, command-line tools, Java, and an emulator or USB-connected phone</td>
+          </tr>
+          <tr>
+            <td>Windows build tools</td>
+            <td>Windows desktop developers</td>
+            <td>Visual Studio with Desktop development with C++ and its required Windows SDK</td>
+          </tr>
+          <tr>
+            <td>Platform tools</td>
+            <td>Linux or macOS developers</td>
+            <td>The native tools reported by Flutter doctor on that operating system</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Check the installed tools:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter --version
+flutter doctor
+node --version
+npm.cmd --version
+git --version</code></pre>
+    </div>
+    <p>On Windows, this guide uses <code>npm.cmd</code> because PowerShell can block <code>npm.ps1</code>. On Linux and
+      macOS, use <code>npm</code> instead.</p>
+    <p>If Flutter reports that plugins require symlink support, enable Windows Developer Mode. Open the relevant
+      settings page with:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>Start-Process &quot;ms-settings:developers&quot;</code></pre>
+    </div>
+    <p>After enabling it, run <code>flutter pub get</code> again inside <code>frontend</code>. Fully restart Flutter
+      after adding a plugin.</p>
+    <h2 id="4-run-only-the-frontend-using-a-teammates-backend">4 Run only the frontend using a teammate&#39;s backend
+    </h2>
+    <p>This is the recommended development arrangement when your teammate owns the database.</p>
+    <h3 id="what-your-teammate-does">What your teammate does</h3>
+    <p>On the computer running the backend:</p>
+    <ol start="1">
+      <li>Open the matching project version.</li>
+      <li>Configure <code>backend/.env</code> for the PostgreSQL database.</li>
+      <li>Start the backend from <code>backend</code>:</li>
+    </ol>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>npm.cmd ci
+npm.cmd start</code></pre>
+    </div>
+    <ol start="4">
+      <li>Keep the backend terminal open.</li>
+      <li>Open <code>http://localhost:3000/api/health</code> on that computer.</li>
+      <li>Find the active network adapter&#39;s IPv4 address:</li>
+    </ol>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>ipconfig</code></pre>
+    </div>
+    <ol start="7">
+      <li>Allow the backend&#39;s TCP port 3000 through the firewall for the shared private network as needed.</li>
+    </ol>
+    <p>Your teammate should confirm that the health endpoint returns:</p>
+    <div class="code-block">
+      <div class="code-label"><span>json</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>{&quot;success&quot;:true,&quot;message&quot;:&quot;API and DB OK&quot;}</code></pre>
+    </div>
+    <h3 id="what-you-do">What you do</h3>
+    <p>Connect to the same reachable network or VPN. In your browser, open the teammate&#39;s address, for example:</p>
+    <div class="code-block">
+      <div class="code-label"><span>text</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>http://192.168.254.127:3000/api/health</code></pre>
+    </div>
+    <p>If it works on their computer but not yours, investigate the IP address, network routing, and firewall before
+      trying registration.</p>
+    <p>From the project folder:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>cd frontend
+flutter pub get
+flutter run -d web-server --web-port=8080 --dart-define=API_BASE_URL=http://192.168.254.127:3000</code></pre>
+    </div>
+    <p>Open <code>http://localhost:8080</code> manually in Chrome or Edge. Replace the example IP with the
+      teammate&#39;s current server address.</p>
+    <p>The backend computer must stay on, reachable, and running the server. Your frontend does not require PostgreSQL,
+      pgAdmin, or a local backend in this arrangement. Changing your own <code>backend/.env</code> will not change the
+      database used by your teammate&#39;s backend.</p>
+    <h2 id="5-run-the-full-system-on-one-development-computer">5 Run the full system on one development computer</h2>
+    <p>Use two terminals. Both terminals initially start in the project folder.</p>
+    <h3 id="prepare-the-development-database">Prepare the development database</h3>
+    <p>The database owner must create a PostgreSQL database and a database login allowed to use it. One example database
+      name is <code>waste_db</code>; the actual name is the one in your configuration.</p>
+    <p>In pgAdmin, connect to the PostgreSQL server and use its database management controls or Query Tool to create the
+      development database and assign the intended owner. Use credentials supplied by your database administrator.</p>
+    <p>Existing team databases should be backed up before schema changes. Do not reset a shared database to solve a
+      frontend problem.</p>
+    <h3 id="terminal-1-configure-and-start-the-backend">Terminal 1 Configure and start the backend</h3>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>cd backend
+npm.cmd ci</code></pre>
+    </div>
+    <p>Create the local configuration file only if it does not already exist:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>if (!(Test-Path .env)) {
+    Copy-Item .env.example .env
+}
+notepad .env</code></pre>
+    </div>
+    <p>Fill in your own values:</p>
+    <div class="code-block">
+      <div class="code-label"><span>dotenv</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>DATABASE_URL=postgresql://USERNAME:PASSWORD@DATABASE_HOST:5432/DATABASE_NAME
+JWT_SECRET=replace-with-a-long-random-secret
+JWT_EXPIRES_IN=1d
+PORT=3000</code></pre>
+    </div>
+    <p>Replace all placeholders. Use <code>localhost</code> only when PostgreSQL is on the same computer as the backend.
+      Passwords containing URL-reserved characters must be URL-encoded within a connection URL.</p>
+    <p>Generate a JWT signing secret locally if you need a new development secret:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>node -e &quot;console.log(require(&#39;crypto&#39;).randomBytes(32).toString(&#39;hex&#39;))&quot;</code></pre>
+    </div>
+    <p>Paste the result into your local configuration. Keep <code>.env</code>, actual database passwords, signing
+      secrets, and database backups out of GitHub.</p>
+    <p>Check the connection:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>npm.cmd run db:check</code></pre>
+    </div>
+    <p>If it says the database is connected but required tables are missing, apply the project&#39;s migrations to the
+      intended development database:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>npm.cmd run migrate
+npm.cmd run db:check</code></pre>
+    </div>
+    <p>Optionally create sample development data:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>npm.cmd run seed</code></pre>
+    </div>
+    <p>Start the backend:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>npm.cmd start</code></pre>
+    </div>
+    <p>Expected server message:</p>
+    <div class="code-block">
+      <div class="code-label"><span>text</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>Server running on port 3000</code></pre>
+    </div>
+    <p>Check <code>http://localhost:3000/api/health</code>. Keep Terminal 1 running.</p>
+    <p>For automatic restarts after backend source changes, use this instead of <code>npm.cmd start</code>:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>npm.cmd run dev</code></pre>
+    </div>
+    <h3 id="terminal-2-start-the-frontend">Terminal 2 Start the frontend</h3>
+    <p>From the project folder:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>cd frontend
+flutter pub get
+flutter run -d web-server --web-port=8080 --dart-define=API_BASE_URL=http://localhost:3000</code></pre>
+    </div>
+    <p>Open <code>http://localhost:8080</code>. To use Flutter&#39;s automatic Chrome launch instead:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:3000</code></pre>
+    </div>
+    <p>Press Ctrl+C in each terminal to stop its running process.</p>
+    <h2 id="6-what-each-backend-command-does">6 What each backend command does</h2>
+    <p>Run these inside <code>backend</code>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Command</th>
+            <th scope="col">Purpose</th>
+            <th scope="col">Changes database data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>npm.cmd ci</td>
+            <td>Install dependencies from the lockfile</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>npm.cmd run db:check</td>
+            <td>Check connectivity and required seed tables</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>npm.cmd run migrate</td>
+            <td>Apply unapplied SQL migration files</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td>npm.cmd run seed</td>
+            <td>Add sample development accounts, areas, and schedules</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td>npm.cmd start</td>
+            <td>Start the API server</td>
+            <td>Requests can change data</td>
+          </tr>
+          <tr>
+            <td>npm.cmd run dev</td>
+            <td>Start the API with source-file watching</td>
+            <td>Requests can change data</td>
+          </tr>
+          <tr>
+            <td>npm.cmd test</td>
+            <td>Run backend tests</td>
+            <td>Ordinary local tests mock database operations; the opt-in integration test writes only to its test
+              database</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>A successful <code>db:check</code> confirms connectivity and the specific table checks implemented by that
+      script. Applying migrations remains the way to ensure the full project schema is installed.</p>
+    <h2 id="7-current-features-and-their-status">7 Current features and their status</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Feature</th>
+            <th scope="col">Current implementation</th>
+            <th scope="col">Where its state is kept</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Create account</td>
+            <td>Real API request; creates a resident after server confirmation</td>
+            <td>PostgreSQL</td>
+          </tr>
+          <tr>
+            <td>Login</td>
+            <td>Real credentials checked by the backend; routes by database role</td>
+            <td>PostgreSQL account plus an in-memory JWT session</td>
+          </tr>
+          <tr>
+            <td>Profile view and editing</td>
+            <td>Reads the account; edits name, phone, and collection area</td>
+            <td>PostgreSQL</td>
+          </tr>
+          <tr>
+            <td>Admin report summary</td>
+            <td>Counts stored reports by status</td>
+            <td>PostgreSQL</td>
+          </tr>
+          <tr>
+            <td>Admin report list</td>
+            <td>Filters, pagination, and report detail</td>
+            <td>PostgreSQL</td>
+          </tr>
+          <tr>
+            <td>Admin report status updates</td>
+            <td>Validates transitions and saves remarks/history</td>
+            <td>PostgreSQL</td>
+          </tr>
+          <tr>
+            <td>Settings and appearance</td>
+            <td>Light, dark, or device-controlled mode</td>
+            <td>Device/browser preferences</td>
+          </tr>
+          <tr>
+            <td>Responsive navigation</td>
+            <td>Phone navigation and desktop sidebar; profile icon opens profile</td>
+            <td>App state</td>
+          </tr>
+          <tr>
+            <td>Collection schedule screen</td>
+            <td>Preview schedules with waste-type filters, expandable preparation tips, and navigation shortcuts</td>
+            <td>Current app memory</td>
+          </tr>
+          <tr>
+            <td>Manage schedules interface</td>
+            <td>Adds and removes demonstration schedules</td>
+            <td>Current app memory</td>
+          </tr>
+          <tr>
+            <td>Announcement interface</td>
+            <td>Updates a local provider value</td>
+            <td>Current app memory</td>
+          </tr>
+          <tr>
+            <td>Resident report submission interface</td>
+            <td>Demonstration confirmation; currently does not send the report to the API</td>
+            <td>No database insert from this screen</td>
+          </tr>
+          <tr>
+            <td>My reports and service feedback interface</td>
+            <td>Sample report and local rating/feedback behavior</td>
+            <td>Local demonstration state</td>
+          </tr>
+          <tr>
+            <td>Sorting guide</td>
+            <td>Searchable guidance with expandable category examples and a local-rules reminder</td>
+            <td>Source code</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Important:</strong> a success notice on the resident report demonstration screen does not mean a report
+      was inserted into PostgreSQL. The backend report API exists, but that resident screen still needs integration.</p>
+    <p>The sorting guide directs users to their barangay waste office for current rules and contact details. Local
+      schedule and announcement changes are not shared between separate computers or app instances.</p>
+    <h2 id="8-accounts-roles-and-admin-access">8 Accounts roles and admin access</h2>
+    <p>Everyone uses the same login screen. The backend returns the user&#39;s role.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Role</th>
+            <th scope="col">Current access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Resident</td>
+            <td>Resident workspace and own profile; resident report API permissions</td>
+          </tr>
+          <tr>
+            <td>Admin</td>
+            <td>Admin workspace, report status changes, schedule API management, and own profile</td>
+          </tr>
+          <tr>
+            <td>Collector</td>
+            <td>Admin-style report viewing and own profile; cannot perform admin-only status changes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Public registration always creates a resident. It cannot set the admin role.</p>
+    <h3 id="development-seed-accounts">Development seed accounts</h3>
+    <p>These accounts are inserted by <code>npm.cmd run seed</code> in the database configured on the backend:</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Role</th>
+            <th scope="col">Email</th>
+            <th scope="col">Initial password</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Admin</td>
+            <td>admin@waste.test</td>
+            <td>Password123</td>
+          </tr>
+          <tr>
+            <td>Collector</td>
+            <td>collector@waste.test</td>
+            <td>Password123</td>
+          </tr>
+          <tr>
+            <td>Resident</td>
+            <td>resident@waste.test</td>
+            <td>Password123</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>These are development fixtures, not an authentication bypass. They work only after they exist in the
+      backend&#39;s database. Seeding does not reset an existing account&#39;s password or role when the email already
+      exists.</p>
+    <p>For a real team administrator, the database owner can assign the admin role to an approved existing account. For
+      example, in pgAdmin&#39;s Query Tool on the correct database:</p>
+    <div class="code-block">
+      <div class="code-label"><span>sql</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>UPDATE users
+SET role = &#39;admin&#39;
+WHERE email = &#39;approved.admin@example.com&#39;
+RETURNING id, email, role;</code></pre>
+    </div>
+    <p>Replace the example email with the approved account. The person must log out and log in again so their new token
+      contains the updated role.</p>
+    <p>To inspect accounts without displaying password hashes:</p>
+    <div class="code-block">
+      <div class="code-label"><span>sql</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>SELECT id, full_name, email, role, area_id, phone
+FROM users
+ORDER BY id;</code></pre>
+    </div>
+    <h2 id="9-create-an-account-and-sign-in">9 Create an account and sign in</h2>
+    <ol start="1">
+      <li>Start the matching backend and frontend versions.</li>
+      <li>Confirm that the backend health endpoint succeeds from the frontend computer.</li>
+      <li>Select Create an account.</li>
+      <li>Enter your full name, email, optional phone, password, and matching password confirmation.</li>
+      <li>Optionally expand Collection area and select a registered barangay/purok.</li>
+      <li>Submit and wait for confirmation.</li>
+      <li>Sign in using the same email and password.</li>
+    </ol>
+    <p>Current validation includes:</p>
+    <ul>
+      <li>Full name: 2 to 150 characters after trimming.</li>
+      <li>Email: valid address format, normalized to lowercase, at most 150 characters.</li>
+      <li>Password for a new account: at least 8 characters and at most 72 UTF-8 bytes.</li>
+      <li>Confirmation: must match the password.</li>
+      <li>Phone: optional, up to 20 characters.</li>
+      <li>Area: optional; a supplied ID must exist in the database.</li>
+    </ul>
+    <p>Email checks validate format only. No verification email is sent and ownership of the inbox is not confirmed.</p>
+    <p>A failed registration request does not show account-created success. General errors appear in a small dismissible
+      notice; field errors appear below the relevant inputs. Duplicate email addresses are rejected.</p>
+    <p>Passwords are hashed by the backend using bcrypt. The frontend does not store the password or persist the JWT.
+      Reloading the page or restarting the app requires signing in again.</p>
+    <h2 id="10-profile-settings-and-appearance">10 Profile settings and appearance</h2>
+    <h3 id="profile">Profile</h3>
+    <p>Tap the person/avatar icon in the resident header or use Profile in the phone navigation and My profile in the
+      desktop sidebar. Admins can use the person icon in their header.</p>
+    <p>The profile shows your name, account email, role, and initials avatar. You can edit your full name, phone, and
+      collection area.</p>
+    <ul>
+      <li>Save changes sends an authenticated request to the backend.</li>
+      <li>Discard changes restores the last loaded or saved profile.</li>
+      <li>Failed saves preserve the details you typed.</li>
+      <li>Email and role are account details, not editable profile fields.</li>
+      <li>An expired session offers a route back to sign in.</li>
+      <li>If the collection-area list fails to load, the stored area is retained.</li>
+    </ul>
+    <p>A profile save changes only the signed-in user&#39;s record.</p>
+    <h3 id="settings">Settings</h3>
+    <p>Open the gear icon, the desktop Settings item, or the Settings control on your profile. Appearance offers:</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Choice</th>
+            <th scope="col">Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Light mode</td>
+            <td>Light surfaces with readable dark text</td>
+          </tr>
+          <tr>
+            <td>Dark mode</td>
+            <td>Dark surfaces with green accents</td>
+          </tr>
+          <tr>
+            <td>Use device setting</td>
+            <td>Follows the operating system&#39;s light or dark appearance</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The choice is saved locally. On the web, use the same browser and site origin, including port, to reuse the saved
+      preference. It is not a PostgreSQL profile preference and is not synchronized to other devices. Browser data
+      clearing can remove it.</p>
+    <h2 id="11-admin-dashboard-and-report-workflow">11 Admin dashboard and report workflow</h2>
+    <p>The dashboard loads real counts and reports through the API. It provides status filters, ten-report pages, report
+      details, and refresh/retry controls.</p>
+    <p>An empty list should show No reports to show. It should not produce a Report not found error simply because the
+      database has no reports.</p>
+    <p>Choose Review report to view its details. Admins can choose a permitted next status and save remarks. Collectors
+      have read-only report access through the dashboard.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Current status</th>
+            <th scope="col">Permitted next statuses</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>submitted</td>
+            <td>under_review, rejected</td>
+          </tr>
+          <tr>
+            <td>under_review</td>
+            <td>in_progress, resolved, rejected</td>
+          </tr>
+          <tr>
+            <td>in_progress</td>
+            <td>resolved, rejected</td>
+          </tr>
+          <tr>
+            <td>resolved</td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td>rejected</td>
+            <td>None</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Rejecting a report requires remarks of at least 3 characters. Remarks have a maximum of 500 characters. The
+      server records a status history. If a report has changed and the server rejects the transition, the interface
+      shows an error instead of confirming success.</p>
+    <p>Existing reports must already be in PostgreSQL, for example through the report API. The resident report form
+      currently remains a demonstration feature.</p>
+    <h2 id="12-android-and-desktop-commands">12 Android and desktop commands</h2>
+    <p>Run Flutter commands inside <code>frontend</code>. Keep the backend reachable from the device.</p>
+    <h3 id="android-emulator">Android emulator</h3>
+    <p>Start an emulator and list devices:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter devices</code></pre>
+    </div>
+    <p>Replace DEVICE_ID with the emulator ID returned by that command:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter run -d DEVICE_ID --dart-define=API_BASE_URL=http://10.0.2.2:3000</code></pre>
+    </div>
+    <p>Use 10.0.2.2 when the backend runs on the computer hosting the emulator. Use the teammate&#39;s reachable IP when
+      the backend runs on a different computer.</p>
+    <h3 id="physical-android-phone">Physical Android phone</h3>
+    <p>Enable Developer options and USB debugging on the phone. Connect with a USB data cable and accept the debugging
+      prompt. List devices and use the phone&#39;s ID:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter devices
+flutter run -d DEVICE_ID --dart-define=API_BASE_URL=http://192.168.254.127:3000</code></pre>
+    </div>
+    <p>The phone itself must be able to reach the backend address. A USB connection alone does not make a teammate&#39;s
+      private network reachable.</p>
+    <p>For Android tooling checks:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter doctor
+flutter doctor --android-licenses</code></pre>
+    </div>
+    <p>Install missing Android SDK command-line tools through Android Studio&#39;s SDK Manager if Flutter reports that
+      they are absent.</p>
+    <h3 id="desktop">Desktop</h3>
+    <p>Run each command on the matching operating system:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter run -d windows --dart-define=API_BASE_URL=http://192.168.254.127:3000</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label"><span>bash</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter run -d linux --dart-define=API_BASE_URL=http://192.168.254.127:3000</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label"><span>bash</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter run -d macos --dart-define=API_BASE_URL=http://192.168.254.127:3000</code></pre>
+    </div>
+    <p>Windows needs the Visual Studio C++ desktop tools. macOS needs Xcode and its platform prerequisites. Linux
+      requires its native build dependencies; the current CI installs clang, cmake, ninja-build, pkg-config, and
+      libgtk-3-dev.</p>
+    <h2 id="13-build-distributable-files">13 Build distributable files</h2>
+    <p>Use the actual reachable backend URL at build time. These examples use an illustrative HTTPS hostname that must
+      be replaced.</p>
+    <p>From <code>frontend</code>:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter build web --release --dart-define=API_BASE_URL=https://api.example.com
+flutter build apk --release --dart-define=API_BASE_URL=https://api.example.com
+flutter build windows --release --dart-define=API_BASE_URL=https://api.example.com</code></pre>
+    </div>
+    <p>On Linux or macOS:</p>
+    <div class="code-block">
+      <div class="code-label"><span>bash</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter build linux --release --dart-define=API_BASE_URL=https://api.example.com
+flutter build macos --release --dart-define=API_BASE_URL=https://api.example.com</code></pre>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Target</th>
+            <th scope="col">Usual output location inside frontend</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Web</td>
+            <td>build/web/</td>
+          </tr>
+          <tr>
+            <td>Android APK</td>
+            <td>build/app/outputs/flutter-apk/app-release.apk</td>
+          </tr>
+          <tr>
+            <td>Windows</td>
+            <td>build/windows/x64/runner/Release/</td>
+          </tr>
+          <tr>
+            <td>Linux</td>
+            <td>build/linux/x64/release/bundle/</td>
+          </tr>
+          <tr>
+            <td>macOS</td>
+            <td>build/macos/Build/Products/Release/</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Output architecture can vary by build target. Distribute the full desktop bundle, not just an executable copied
+      out of its required files.</p>
+    <p>Android store/release distribution needs the team&#39;s proper signing configuration; the generated project
+      template is not a completed production signing setup. Local HTTP is enabled for Android debug/profile development.
+      Use HTTPS for release deployment.</p>
+    <p>To preview an already built web folder, if Python is installed:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>py -m http.server 8080 --directory build/web</code></pre>
+    </div>
+    <p>Then open <code>http://localhost:8080</code>. Serve the web folder through a web server; do not rely on opening
+      index.html directly from disk.</p>
+    <h2 id="14-test-and-verify-the-project">14 Test and verify the project</h2>
+    <h3 id="frontend-checks">Frontend checks</h3>
+    <p>Run inside <code>frontend</code>:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter analyze
+flutter test --reporter expanded</code></pre>
+    </div>
+    <p>To reduce the number of test workers:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter test --concurrency=1 --reporter expanded</code></pre>
+    </div>
+    <p>To reproduce CI-style fallback-font layout checks on Windows:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter test --concurrency=1 --dart-define=LAYOUT_ONLY=true --reporter expanded</code></pre>
+    </div>
+    <p>The current suite contains 29 Flutter tests covering account forms, API errors, authentication sessions, profile
+      editing, admin status updates, responsive navigation, settings, and preference persistence.</p>
+    <p>Screenshot references are Windows-specific. Linux still runs functional and layout assertions, including the
+      shorter desktop-window check, without requiring the Windows screenshot fonts.</p>
+    <h3 id="backend-checks">Backend checks</h3>
+    <p>Run inside <code>backend</code>:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>npm.cmd test</code></pre>
+    </div>
+    <p>Ordinary local tests use mocked database operations. The separate database integration test is enabled by
+      RUN_DB_TESTS=1 and is intended for a disposable test database after migrations. It creates and removes a test
+      account and checks actual registration, login, profile persistence, and report-summary access. Do not enable it
+      casually against the team&#39;s real database.</p>
+    <h3 id="verify-real-persistence">Verify real persistence</h3>
+    <p>On the intended development system:</p>
+    <ol start="1">
+      <li>Confirm /api/health succeeds.</li>
+      <li>Create a unique resident account through the app.</li>
+      <li>Ask the database owner to inspect the users table in pgAdmin.</li>
+      <li>Sign in with that account.</li>
+      <li>Change its phone or name in Profile and save.</li>
+      <li>Inspect the same users row again.</li>
+    </ol>
+    <p>Opening the interface alone does not prove database connectivity. A frontend unit test using a mock HTTP client
+      also does not prove a connection to the team&#39;s database.</p>
+    <h2 id="15-git-and-github-commands">15 Git and GitHub commands</h2>
+    <p>The project repository is:</p>
+    <div class="code-block">
+      <div class="code-label"><span>text</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>https://github.com/Gen-Tech-CSB/Com_Waste_Col_System.git</code></pre>
+    </div>
+    <p>The branch used for automatic checks is <code>ci/cd_workflow</code>, not <code>cd/cd_workflow</code>.</p>
+    <h3 id="clone-a-fresh-copy">Clone a fresh copy</h3>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>git clone --branch ci/cd_workflow https://github.com/Gen-Tech-CSB/Com_Waste_Col_System.git
+cd Com_Waste_Col_System</code></pre>
+    </div>
+    <h3 id="check-your-current-branch-and-remote">Check your current branch and remote</h3>
+    <p>Run from the project folder:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>git status
+git branch --show-current
+git remote -v</code></pre>
+    </div>
+    <p>If origin is missing:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>git remote add origin https://github.com/Gen-Tech-CSB/Com_Waste_Col_System.git</code></pre>
+    </div>
+    <p>If origin already exists but points to the wrong repository:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>git remote set-url origin https://github.com/Gen-Tech-CSB/Com_Waste_Col_System.git</code></pre>
+    </div>
+    <p>The URL is an argument to a Git command. Entering the URL alone in PowerShell will not upload anything.</p>
+    <h3 id="save-and-push-changes">Save and push changes</h3>
+    <p>Use the ci/cd_workflow branch and review what you are publishing:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>git switch ci/cd_workflow
+git status --short
+git add .
+git diff --cached --name-only
+git commit -m &quot;Describe your changes&quot;
+git push origin ci/cd_workflow</code></pre>
+    </div>
+    <p>Check that the staged list does not include .env, real credentials, or database backups. The current ignore rules
+      exclude backend/.env, backend/node_modules, Flutter build output, and generated test-failure images.</p>
+    <h3 id="receive-team-changes">Receive team changes</h3>
+    <p>With your current work committed or otherwise safely saved:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>git fetch origin
+git pull --ff-only origin ci/cd_workflow</code></pre>
+    </div>
+    <p>If Git reports diverging or unrelated histories, stop and inspect the situation with the team. Do not use force
+      push as a general fix for rejected pushes.</p>
+    <h2 id="16-what-github-actions-runs">16 What GitHub Actions runs</h2>
+    <p>The workflow is stored in <code>.github/workflows/ci.yml</code>.</p>
+    <p>Automatic execution is limited to pushes to <code>ci/cd_workflow</code>. The file also enables manual dispatch.
+      There is no pull-request trigger in the current workflow.</p>
+    <p>Merging the code into another branch carries over the code, but this branch filter does not automatically run
+      checks on that other branch. It does not control whether the application itself can run.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Job</th>
+            <th scope="col">Current behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Flutter Tests and Web Build</td>
+            <td>Install dependencies, analyze, run tests, build web, upload flutter-web-build</td>
+          </tr>
+          <tr>
+            <td>Backend and PostgreSQL Tests</td>
+            <td>Start temporary PostgreSQL 16, install backend packages, apply migrations, run tests including the
+              database integration test</td>
+          </tr>
+          <tr>
+            <td>Native build matrix</td>
+            <td>Build Android debug APK, Windows release, Linux release, and macOS release on matching runners</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The native matrix currently checks builds but does not upload native packages as downloadable artifacts. The web
+      job uploads <code>flutter-web-build</code>.</p>
+    <h3 id="view-a-run">View a run</h3>
+    <ol start="1">
+      <li>Open the repository on GitHub.</li>
+      <li>Select Actions.</li>
+      <li>Open Community Waste System CI.</li>
+      <li>Open the run for your commit.</li>
+      <li>Expand the relevant job and step.</li>
+    </ol>
+    <p>If a Run workflow button is available, choose ci/cd_workflow to start a manual run. Pushing a new commit to that
+      branch also starts the configured checks.</p>
+    <p>If a step ends with Process completed with exit code 1, read the earlier lines for the failed test name and
+      actual exception. That final line is only a failure summary.</p>
+    <h3 id="test-database-versus-team-database">Test database versus team database</h3>
+    <p>The backend job creates its own temporary database named testdb with workflow test credentials. It does not use
+      the team&#39;s backend/.env file, and passing this job does not prove that the team&#39;s real database is
+      reachable.</p>
+    <p>The current web build does not supply a deployment API_BASE_URL. It therefore uses the frontend&#39;s default
+      localhost backend address. Rebuild with the deployed backend URL before using that artifact as a public,
+      database-connected website.</p>
+    <h2 id="17-deploying-a-shared-website">17 Deploying a shared website</h2>
+    <p>A complete deployment needs three reachable components:</p>
+    <div class="code-block">
+      <div class="code-label"><span>text</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>Public frontend URL
+        |
+        v
+Public HTTPS backend URL
+        |
+        v
+PostgreSQL accessible to that backend</code></pre>
+    </div>
+    <ol start="1">
+      <li>Choose a backend hosting environment that can run the Node.js server.</li>
+      <li>Configure its private DATABASE_URL, JWT_SECRET, JWT_EXPIRES_IN, and required PORT settings.</li>
+      <li>Make the intended PostgreSQL database reachable from that backend.</li>
+      <li>Apply the project&#39;s schema to the intended environment under the database owner&#39;s control.</li>
+      <li>Deploy the matching backend code and verify its /api/health endpoint.</li>
+      <li>Build the Flutter frontend with that backend&#39;s HTTPS origin.</li>
+      <li>Host the contents of frontend/build/web using an appropriate static hosting service.</li>
+      <li>Verify registration, login, profile saving, and admin report access end to end.</li>
+    </ol>
+    <p>An example build command, after replacing the hostname:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter build web --release --dart-define=API_BASE_URL=https://api.example.com</code></pre>
+    </div>
+    <p>API_BASE_URL is an origin only; do not add /api because the app adds it. It is compiled into the frontend.
+      Changing a frontend machine&#39;s .env does not change a built web bundle.</p>
+    <p>A database on a teammate&#39;s private Wi-Fi address is usually not reachable from a public hosting server or
+      GitHub runner without suitable routing. A public website cannot rely on a teammate&#39;s laptop being off or
+      disconnected.</p>
+    <p>Keep database credentials on the backend. A hosted frontend must use HTTPS-compatible API access. Plan proper
+      Android signing, upload storage, access controls, backups, and integration of the remaining demonstration screens
+      before treating the project as a completed public service.</p>
+    <p>Uploading code to GitHub or obtaining a successful build is not a deployment step in the current workflow.</p>
+    <h2 id="18-database-access-and-structure">18 Database access and structure</h2>
+    <h3 id="who-needs-direct-database-access">Who needs direct database access</h3>
+    <p>Frontend users connect to the backend, not directly to PostgreSQL. If the backend and PostgreSQL run together on
+      your teammate&#39;s computer, frontend access normally requires the backend port, not an open PostgreSQL port on
+      every client.</p>
+    <p>For administration through pgAdmin on a different computer, the database owner must provide the server address,
+      port, database name, username, and password and allow the connection.</p>
+    <p>PostgreSQL remote access may require:</p>
+    <ul>
+      <li>An appropriate listen_addresses setting on the database server.</li>
+      <li>A pg_hba.conf rule limited to the intended client IP and database account.</li>
+      <li>Firewall or hosting-provider access rules.</li>
+      <li>A shared network, VPN, or other authorized route.</li>
+    </ul>
+    <p>Example pg_hba.conf pattern for an administrator to adapt:</p>
+    <div class="code-block">
+      <div class="code-label"><span>text</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>host DATABASE_NAME DATABASE_USER YOUR_CLIENT_IP/32 scram-sha-256</code></pre>
+    </div>
+    <p>Do not replace a server&#39;s existing access rules wholesale. Consult the PostgreSQL documentation and database
+      owner.</p>
+    <h3 id="tables">Tables</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Table</th>
+            <th scope="col">Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>barangays</td>
+            <td>Barangay records</td>
+          </tr>
+          <tr>
+            <td>areas</td>
+            <td>Puroks or zones linked to a barangay</td>
+          </tr>
+          <tr>
+            <td>users</td>
+            <td>Accounts, roles, password hashes, phone, and optional area</td>
+          </tr>
+          <tr>
+            <td>collection_schedules</td>
+            <td>Area, day, start/end time, active state, waste types</td>
+          </tr>
+          <tr>
+            <td>reports</td>
+            <td>Report category, description, location, owner, status, reference</td>
+          </tr>
+          <tr>
+            <td>report_photos</td>
+            <td>File paths associated with reports</td>
+          </tr>
+          <tr>
+            <td>report_status_history</td>
+            <td>Changes, remarks, actor, and time</td>
+          </tr>
+          <tr>
+            <td>schema_migrations</td>
+            <td>Applied migration filenames</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Areas reference barangays. Users and schedules reference areas. Reports reference their resident and area. Photos
+      and history reference the report.</p>
+    <p>The migration files are 001_init.sql, 002_schedules.sql, 003_schedule_waste_types.sql, and 004_reports.sql. Add
+      new numbered migrations for future schema changes instead of rewriting migrations already used by the team.</p>
+    <p>On a fresh development database, the seed creates 2 barangays, 8 areas, 3 sample users, and 16 schedules.
+      Existing databases can have different totals. Seeding does not create sample reports.</p>
+    <p>When moving databases, use PostgreSQL/pgAdmin backup and restore under the owner&#39;s control. Creating a new
+      empty database does not move existing users and reports. Keep backups outside the source repository.</p>
+    <h2 id="19-api-reference">19 API reference</h2>
+    <p>All paths below start with <code>/api</code>. Successful responses normally contain <code>success: true</code>
+      and <code>data</code>; errors contain <code>success: false</code> and a message. Validation errors can also
+      include an errors list.</p>
+    <p>Protected endpoints require:</p>
+    <div class="code-block">
+      <div class="code-label"><span>text</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>Authorization: Bearer TOKEN_FROM_LOGIN</code></pre>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Method</th>
+            <th scope="col">Path after /api</th>
+            <th scope="col">Access</th>
+            <th scope="col">Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GET</td>
+            <td>/health</td>
+            <td>Public</td>
+            <td>Check API and database</td>
+          </tr>
+          <tr>
+            <td>POST</td>
+            <td>/auth/register</td>
+            <td>Public</td>
+            <td>Create a resident</td>
+          </tr>
+          <tr>
+            <td>POST</td>
+            <td>/auth/login</td>
+            <td>Public</td>
+            <td>Obtain token and account details</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/auth/me</td>
+            <td>Signed-in user</td>
+            <td>Read own profile</td>
+          </tr>
+          <tr>
+            <td>PATCH</td>
+            <td>/auth/me</td>
+            <td>Signed-in user</td>
+            <td>Update own name, phone, area</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/areas</td>
+            <td>Public</td>
+            <td>List collection areas</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/schedules</td>
+            <td>Signed-in user</td>
+            <td>Resident&#39;s active-area schedules, or staff list</td>
+          </tr>
+          <tr>
+            <td>POST</td>
+            <td>/schedules</td>
+            <td>Admin</td>
+            <td>Create schedules for one or more areas</td>
+          </tr>
+          <tr>
+            <td>PUT</td>
+            <td>/schedules/:id</td>
+            <td>Admin</td>
+            <td>Update one schedule</td>
+          </tr>
+          <tr>
+            <td>DELETE</td>
+            <td>/schedules/:id</td>
+            <td>Admin</td>
+            <td>Delete one schedule</td>
+          </tr>
+          <tr>
+            <td>POST</td>
+            <td>/reports</td>
+            <td>Resident</td>
+            <td>Create a report through the API</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/reports/mine</td>
+            <td>Resident</td>
+            <td>List own reports</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/reports</td>
+            <td>Admin or collector</td>
+            <td>List reports with pagination and filters</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/reports/summary</td>
+            <td>Admin or collector</td>
+            <td>Count reports by status</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/reports/:id</td>
+            <td>Owner, admin, collector</td>
+            <td>Read a report with photos and history</td>
+          </tr>
+          <tr>
+            <td>PATCH</td>
+            <td>/reports/:id/status</td>
+            <td>Admin</td>
+            <td>Save a permitted status transition</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Profile updates accept only full_name, phone, and area_id, with at least one field. Phone and area_id can be null
+      to clear them. Attempts to update id, email, or role through the profile endpoint are rejected.</p>
+    <p>Report categories are missed_pickup, illegal_dumping, overflowing_bin, and other. Description length is 5 to 1000
+      characters. Optional latitude and longitude must be supplied together.</p>
+    <p>The report API supports multipart/form-data with up to 3 photos, each at most 5 MB, using the field name photos.
+      Supported types are JPG, PNG, and WEBP. This capability belongs to the backend API; the current resident report
+      screen is not integrated with it.</p>
+    <p>Schedules use day_of_week values 0 through 6, where 0 is Sunday. Times use HH:MM. The backend supports
+      biodegradable, non_biodegradable, recyclable, and special waste types.</p>
+    <p>For payload examples and additional responses, see backend/docs/API.md.</p>
+    <h2 id="20-troubleshooting">20 Troubleshooting</h2>
+    <h3 id="flutter-cannot-find-pubspecyaml">Flutter cannot find pubspec.yaml</h3>
+    <p>You are outside the Flutter folder. From the project folder:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>cd frontend
+flutter pub get</code></pre>
+    </div>
+    <p>From backend:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>cd ..\frontend</code></pre>
+    </div>
+    <h3 id="powershell-says-npmps1-cannot-be-loaded">PowerShell says npm.ps1 cannot be loaded</h3>
+    <p>Use the Windows command wrapper:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>npm.cmd ci
+npm.cmd start</code></pre>
+    </div>
+    <p>Changing the computer&#39;s execution policy is not required for these commands.</p>
+    <h3 id="missing-script-seed-or-migrate">Missing script seed or migrate</h3>
+    <p>Run the command in backend, where package.json defines it:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>cd backend
+npm.cmd run seed</code></pre>
+    </div>
+    <p>If already inside backend, run only the last command. Do not enter backend a second time.</p>
+    <h3 id="postgresql-refused-the-connection">PostgreSQL refused the connection</h3>
+    <p>Check the host and port in the backend owner&#39;s .env. localhost means that backend computer. Confirm
+      PostgreSQL is running and accepts that connection.</p>
+    <p>If your teammate runs the backend and database, use their API from your frontend instead of trying to run an
+      unconfigured local backend.</p>
+    <h3 id="database-connected-but-tables-are-missing">Database connected but tables are missing</h3>
+    <p>Have the database owner apply the project migrations to the intended development database, then run db:check
+      again. Do not seed into a database with an unrelated schema.</p>
+    <h3 id="frontend-request-timed-out">Frontend request timed out</h3>
+    <p>Test the API address from the frontend computer:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>Test-NetConnection -ComputerName 192.168.254.127 -Port 3000</code></pre>
+    </div>
+    <p>Read TcpTestSucceeded. Also open the backend health URL in a browser. Check the teammate&#39;s backend process,
+      current IPv4 address, network/VPN, and firewall. An IP address can change when the network reconnects.</p>
+    <h3 id="incorrect-email-or-password">Incorrect email or password</h3>
+    <p>Use a database account, not the removed frontend mock login. Confirm the backend points to the expected database.
+      Seed accounts work only if inserted, and the seed script does not reset an existing password.</p>
+    <h3 id="account-creation-fails">Account creation fails</h3>
+    <p>Read the field errors or dismissible notice. Check email format, the eight-character minimum, matching passwords,
+      duplicate email, and API reachability. Server errors require checking the backend owner&#39;s terminal and
+      database configuration.</p>
+    <h3 id="admin-dashboard-says-report-not-found">Admin dashboard says Report not found</h3>
+    <p>The initial summary request can be mistaken for an ID if the backend is an older version. Update the
+      teammate&#39;s backend to the matching source and restart it. The /reports/summary route must be registered before
+      /reports/:id.</p>
+    <p>An empty database should show an empty state, not an endpoint error.</p>
+    <h3 id="profile-saving-gives-an-endpoint-error">Profile saving gives an endpoint error</h3>
+    <p>The running backend needs PATCH /api/auth/me plus its controller and model implementation. Update the matching
+      backend source and restart. Also check session expiry and the validity of the selected collection area.</p>
+    <h3 id="login-returns-a-server-error">Login returns a server error</h3>
+    <p>Check database access, JWT_SECRET, and JWT_EXPIRES_IN on the backend. A valid expiry example is 1d. Read the
+      backend terminal&#39;s actual error; do not share secrets in a public issue.</p>
+    <h3 id="chrome-debugger-shows-runtimeevaluate-or-executioncontext-errors">Chrome debugger shows Runtime.evaluate or
+      execution-context errors</h3>
+    <p>Try the supported web-server option and open the page manually:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter run -d web-server --web-port=8080 --dart-define=API_BASE_URL=http://192.168.254.127:3000</code></pre>
+    </div>
+    <p>A debugger error alone does not establish whether PostgreSQL is connected. Check the health endpoint separately.
+    </p>
+    <h3 id="flutter-reports-plugin-symlink-support-is-required">Flutter reports plugin symlink support is required</h3>
+    <p>Enable Windows Developer Mode and run flutter pub get again. Fully restart the frontend rather than relying on
+      hot reload for a newly added plugin.</p>
+    <h3 id="flutter-tests-report-that-the-disk-is-full">Flutter tests report that the disk is full</h3>
+    <p>Free disk space before retrying. Flutter uses generated build files and temporary compiler output. A project
+      cleanup can remove rebuildable output:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>flutter clean
+flutter pub get</code></pre>
+    </div>
+    <p>Run these in frontend. Cleanup can require plugin links to be recreated, so Developer Mode may be needed on
+      Windows.</p>
+    <h3 id="git-push-says-non-fast-forward-or-fetch-first">Git push says non fast forward or fetch first</h3>
+    <p>Save your work, fetch, and inspect the branch:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>git fetch origin
+git status</code></pre>
+    </div>
+    <p>If a normal fast-forward update is possible on the correct branch:</p>
+    <div class="code-block">
+      <div class="code-label"><span>powershell</span><button type="button" class="copy"
+          aria-label="Copy command block">Copy</button></div>
+      <pre><code>git pull --ff-only origin ci/cd_workflow
+git push origin ci/cd_workflow</code></pre>
+    </div>
+    <p>If histories diverge, coordinate a merge with the team. Avoid force pushing over another person&#39;s work.</p>
+    <h3 id="github-says-repository-not-found">GitHub says Repository not found</h3>
+    <p>Check git remote -v and the exact repository URL. Sign in with an account that has repository access. A
+      correct-looking URL does not grant permission.</p>
+    <h3 id="github-says-process-completed-with-exit-code-1">GitHub says Process completed with exit code 1</h3>
+    <p>Expand the failed step and read the earlier exception. Package update notices are informational. Preserve the
+      failing test name and error details when asking for help.</p>
+    <h3 id="code-was-pushed-but-the-teammate-still-sees-old-behavior">Code was pushed but the teammate still sees old
+      behavior</h3>
+    <p>A GitHub push does not restart the backend on a teammate&#39;s computer. The teammate must obtain the matching
+      code, install changed dependencies, apply any intended migrations, and restart the server.</p>
+    <h2 id="21-team-handoff-checklist">21 Team handoff checklist</h2>
+    <p>Before a demonstration:</p>
+    <ul>
+      <li>Agree on the project version and branch.</li>
+      <li>Confirm which computer or service runs PostgreSQL and the backend.</li>
+      <li>Verify the health endpoint from each frontend device.</li>
+      <li>Start frontend builds with the correct API origin.</li>
+      <li>Use a registered account with the intended role.</li>
+      <li>Demonstrate real registration, login, profile edits, and admin reports.</li>
+      <li>Clearly identify local demonstration screens.</li>
+      <li>Keep the backend computer awake and its terminal running.</li>
+      <li>Confirm that secrets and database backups are excluded from the commit.</li>
+      <li>Record any failed job&#39;s actual error rather than only its exit code.</li>
+    </ul>
+    <p>Before public deployment, finish the resident report and schedule integrations, decide how announcements and
+      feedback will be stored, verify local guidance and contact information, and configure hosting, HTTPS, signing,
+      backups, and operational access.</p>
+    <h2 id="22-official-references-and-project-references">22 Official references and project references</h2>
+    <ul>
+      <li>Flutter web setup: <a
+          href="https://docs.flutter.dev/platform-integration/web/setup">https://docs.flutter.dev/platform-integration/web/setup</a>
+      </li>
+      <li>Flutter web build and deployment: <a
+          href="https://docs.flutter.dev/deployment/web">https://docs.flutter.dev/deployment/web</a></li>
+      <li>GitHub workflow triggers: <a
+          href="https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow">https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow</a>
+      </li>
+      <li>PostgreSQL client access rules: <a
+          href="https://www.postgresql.org/docs/current/auth-pg-hba-conf.html">https://www.postgresql.org/docs/current/auth-pg-hba-conf.html</a>
+      </li>
+      <li>Project API details: backend/docs/API.md</li>
+      <li>Existing database notes: backend/docs/DATABASE.md</li>
+      <li>Workflow source: .github/workflows/ci.yml</li>
+      <li>Recorded successful Flutter job for source a129dbd: <a
+          href="https://github.com/Gen-Tech-CSB/Com_Waste_Col_System/actions/runs/42689833662/job/129406342136">https://github.com/Gen-Tech-CSB/Com_Waste_Col_System/actions/runs/42689833662/job/129406342136</a>
+      </li>
+    </ul>
+    <p>The project source and current configuration remain the authority when the code changes after this documentation
+      snapshot.</p>
+    <div class="bottom"><a href="#community-waste-collection-system-guide">Back to top</a><a
+        href="PROJECT_GUIDE.md">Markdown source</a></div>
+  </main>
+  <script>document.querySelectorAll('.copy').forEach(button => button.addEventListener('click', async () => {
+      const text = button.closest('.code-block').querySelector('pre code').textContent;
+      try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text) } else { const area = document.createElement('textarea'); area.value = text; area.style.position = 'fixed'; area.style.opacity = '0'; document.body.appendChild(area); area.select(); if (!document.execCommand('copy')) throw Error('copy'); area.remove() } button.textContent = 'Copied'; setTimeout(() => button.textContent = 'Copy', 1500) } catch { button.textContent = 'Select text to copy' }
+    }));</script>
+</body>
+
+</html>

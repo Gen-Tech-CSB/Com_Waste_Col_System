@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class Ui {
   static const background = Color(0xFF101A1A);
@@ -188,4 +188,63 @@ class SurfaceCard extends StatelessWidget {
     ),
     child: child,
   );
+}
+
+class InteractiveCard extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+  final EdgeInsetsGeometry padding;
+  final String? label;
+  const InteractiveCard({
+    super.key,
+    required this.child,
+    required this.onTap,
+    this.padding = const EdgeInsets.all(22),
+    this.label,
+  });
+  @override
+  State<InteractiveCard> createState() => _InteractiveCardState();
+}
+
+class _InteractiveCardState extends State<InteractiveCard> {
+  bool _hovered = false;
+  bool _focused = false;
+  @override
+  Widget build(BuildContext context) {
+    final colors = Ui.of(context);
+    final active = _hovered || _focused;
+    return Semantics(
+      label: widget.label,
+      button: true,
+      child: AnimatedContainer(
+        duration: MediaQuery.maybeOf(context)?.disableAnimations == true
+            ? Duration.zero
+            : const Duration(milliseconds: 160),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: active ? colors.green : colors.border),
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: colors.green.withValues(alpha: 0.09),
+                    blurRadius: 18,
+                    offset: const Offset(0, 5),
+                  ),
+                ]
+              : [],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(22),
+            onTap: widget.onTap,
+            onHover: (value) => setState(() => _hovered = value),
+            onFocusChange: (value) => setState(() => _focused = value),
+            child: Padding(padding: widget.padding, child: widget.child),
+          ),
+        ),
+      ),
+    );
+  }
 }

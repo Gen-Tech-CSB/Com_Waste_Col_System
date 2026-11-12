@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/announcement_provider.dart';
@@ -89,6 +89,77 @@ class _AdminDashboardState extends State<AdminDashboard> {
         setState(() => _loading = false);
       }
     }
+  }
+
+  void _filterReports(String? status) {
+    setState(() {
+      _status = status;
+      _page = 1;
+    });
+    _load();
+  }
+
+  Widget _progressOverview() {
+    final total = (_summary['total'] as num?)?.toInt() ?? 0;
+    final resolved = (_summary['resolved'] as num?)?.toInt() ?? 0;
+    final rate = total == 0 ? 0.0 : (resolved / total).clamp(0.0, 1.0);
+    final colors = Ui.of(context);
+    return SurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 16,
+            runSpacing: 12,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colors.green.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(Icons.insights_outlined, color: colors.green),
+              ),
+              Text(
+                'Community progress',
+                style: TextStyle(
+                  color: colors.text,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                '${(rate * 100).round()}% resolved',
+                style: TextStyle(
+                  color: colors.green,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Semantics(
+            label: 'Resolved reports',
+            value: '$resolved of $total',
+            child: LinearProgressIndicator(
+              value: rate,
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(8),
+              color: colors.green,
+              backgroundColor: colors.green.withValues(alpha: 0.12),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            total == 0
+                ? 'Your community report overview will appear here.'
+                : '$resolved of $total reports resolved. Select a summary card to focus your review.',
+            style: TextStyle(color: colors.muted, height: 1.5),
+          ),
+        ],
+      ),
+    );
   }
 
   void _signOut() {
@@ -449,14 +520,30 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 builder: (context, constraints) {
                   final columns = constraints.maxWidth >= 900 ? 4 : 2;
                   final stats = [
-                    ('Total reports', _summary['total'], Icons.folder_outlined),
+                    (
+                      'Total reports',
+                      _summary['total'],
+                      Icons.folder_outlined,
+                      null,
+                    ),
                     (
                       'Awaiting review',
                       _summary['submitted'],
                       Icons.inbox_outlined,
+                      'submitted',
                     ),
-                    ('In progress', _summary['in_progress'], Icons.autorenew),
-                    ('Resolved', _summary['resolved'], Icons.task_alt),
+                    (
+                      'In progress',
+                      _summary['in_progress'],
+                      Icons.autorenew,
+                      'in_progress',
+                    ),
+                    (
+                      'Resolved',
+                      _summary['resolved'],
+                      Icons.task_alt,
+                      'resolved',
+                    ),
                   ];
                   return Wrap(
                     spacing: 14,
@@ -467,12 +554,37 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             width:
                                 (constraints.maxWidth - (columns - 1) * 14) /
                                 columns,
-                            child: SurfaceCard(
+                            child: InteractiveCard(
+                              label: 'Filter ${s.$1.toLowerCase()}',
+                              onTap: () => _filterReports(s.$4),
                               padding: const EdgeInsets.all(18),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(s.$3, color: Ui.of(context).green),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Ui.of(context).green
+                                              .withValues(alpha: 0.12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          s.$3,
+                                          color: Ui.of(context).green,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Icon(
+                                        Icons.arrow_outward,
+                                        size: 18,
+                                        color: Ui.of(context).muted,
+                                      ),
+                                    ],
+                                  ),
                                   const SizedBox(height: 18),
                                   Text(
                                     '${s.$2 ?? 0}',
@@ -499,6 +611,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   );
                 },
               ),
+              const SizedBox(height: 18),
+              _progressOverview(),
               const SizedBox(height: 32),
               Text(
                 'Community reports',
@@ -517,11 +631,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     label: const Text('All'),
                     selected: _status == null,
                     onSelected: (_) {
-                      setState(() {
-                        _status = null;
-                        _page = 1;
-                      });
-                      _load();
+                      _filterReports(null);
                     },
                   ),
                   ..._statuses.entries.map(
@@ -529,11 +639,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       label: Text(s.value),
                       selected: _status == s.key,
                       onSelected: (_) {
-                        setState(() {
-                          _status = s.key;
-                          _page = 1;
-                        });
-                        _load();
+                        _filterReports(s.key);
                       },
                     ),
                   ),
@@ -586,12 +692,23 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   fontSize: 12,
                                 ),
                               ),
-                              Text(
-                                _statuses[r['status']] ??
-                                    r['status'].toString(),
-                                style: TextStyle(
-                                  color: _color(r['status']),
-                                  fontWeight: FontWeight.w600,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _color(r['status'])
+                                      .withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  _statuses[r['status']] ??
+                                      r['status'].toString(),
+                                  style: TextStyle(
+                                    color: _color(r['status']),
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ],

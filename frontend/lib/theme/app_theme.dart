@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Central place for the app's light and dark themes.
 /// Screens should read colors from Theme.of(context) instead of hardcoding them,

@@ -1,6 +1,6 @@
 import '../services/api_client.dart';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../widgets/ui.dart';
 import 'schedule_screen.dart';
@@ -36,7 +36,11 @@ class _ResidentHomeState extends State<ResidentHome> {
     Icons.person_outline,
   ];
   late final _screens = [
-    const ScheduleScreen(),
+    ScheduleScreen(
+      onReport: () => setState(() => _selectedIndex = 1),
+      onGuide: () => setState(() => _selectedIndex = 3),
+      onProfile: () => setState(() => _selectedIndex = 4),
+    ),
     const ReportScreen(),
     const MyReportsScreen(),
     const GuideScreen(),
@@ -282,11 +286,17 @@ class _ResidentHomeState extends State<ResidentHome> {
                               color: Ui.of(context).muted,
                             ),
                             const SizedBox(width: 6),
-                            Text(
-                              'Your community',
-                              style: TextStyle(
-                                color: Ui.of(context).muted,
-                                fontSize: 12,
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 180),
+                              child: Text(
+                                _api.user?['full_name']?.toString() ??
+                                    'Your community',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Ui.of(context).muted,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 20),

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -143,6 +143,17 @@ void main() {
       await tester.tap(find.text('Try again'));
       await tester.pumpAndSettle();
       expect(find.text('7'), findsOneWidget);
+      expect(find.text('57% resolved'), findsOneWidget);
+      final summaryCard = find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics && widget.properties.label == 'Filter resolved',
+      );
+      await tester.ensureVisible(summaryCard);
+      await tester.tap(summaryCard);
+      await tester.pumpAndSettle();
+      expect(filtered, true);
+      filtered = false;
+
       await tester.scrollUntilVisible(
         find.text('WR-TEST-5'),
         200,

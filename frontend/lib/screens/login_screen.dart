@@ -3,7 +3,7 @@ import '../services/form_validation.dart';
 
 import '../widgets/ui.dart';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'resident_home.dart';
 import 'admin_dashboard.dart';
@@ -173,19 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               const SizedBox(height: 32),
                               if (_error != null) ...[
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF422A28),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    _error!,
-                                    style: const TextStyle(
-                                      color: Color(0xFFFFB4AB),
-                                    ),
-                                  ),
-                                ),
+                                InlineError(message: _error!),
                                 const SizedBox(height: 20),
                               ],
                               TextFormField(

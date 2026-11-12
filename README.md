@@ -2,6 +2,8 @@
 
 Flutter client with an Express/PostgreSQL API.
 
+For complete setup instructions, commands, feature status, database connections, API details, and troubleshooting, use the [complete project guide](docs/PROJECT_GUIDE.md). For everyday commands, use the [quick start](docs/QUICK_START.md). A [printable guide](docs/PROJECT_GUIDE.html) includes command-copy controls and a print or save-as-PDF button when opened in a browser.
+
 ## Backend
 
 Create `backend/.env` with DATABASE_URL, JWT_SECRET, JWT_EXPIRES_IN (for example 1d), and optionally PORT (default 3000). Use a long random JWT secret.
@@ -60,3 +62,6 @@ Deploy the updated backend routes, controller and user model together with the f
 Tap the profile avatar in the resident header to open My profile. Settings is available from the header gear, desktop sidebar, profile page, and admin header. Appearance offers Light mode, Dark mode, or Use device setting. The selected mode is saved locally with shared_preferences and restored on the same device/browser origin. System mode follows operating-system appearance changes. Account and authentication data are not stored in these preferences.
 
 After pulling this update, run flutter pub get and fully restart the frontend so the new preferences plugin is registered.
+## Workflow and commands
+
+See [Workflow and Commands](docs/WORKFLOW_AND_COMMANDS.md) for setup, local runs on web/Android/Windows, database connectivity, testing, GitHub CI, builds, deployment, and troubleshooting.

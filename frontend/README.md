@@ -2,6 +2,8 @@
 
 Flutter client with an Express/PostgreSQL API.
 
+See the [complete project guide](../docs/PROJECT_GUIDE.md), [quick start](../docs/QUICK_START.md), and [printable guide](../docs/PROJECT_GUIDE.html) for the full instructions. Flutter commands must run from this frontend folder.
+
 ## Backend
 
 Create `backend/.env` with DATABASE_URL, JWT_SECRET, JWT_EXPIRES_IN (for example 1d), and optionally PORT (default 3000). Use a long random JWT secret.

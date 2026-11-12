@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../services/api_client.dart';
 import '../services/form_validation.dart';
@@ -283,6 +283,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           validator: (v) => v != _password.text
                               ? 'Passwords do not match.'
                               : null,
+                        ),
+                        const SizedBox(height: 14),
+                        ListenableBuilder(
+                          listenable: Listenable.merge([_password, _confirm]),
+                          builder: (context, _) {
+                            final valid =
+                                validateNewPassword(_password.text) == null;
+                            final matches =
+                                _confirm.text.isNotEmpty &&
+                                _confirm.text == _password.text;
+                            return Wrap(
+                              spacing: 16,
+                              runSpacing: 8,
+                              children: [
+                                for (final item in [
+                                  (valid, 'Password meets requirements'),
+                                  (matches, 'Passwords match'),
+                                ])
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        item.$1
+                                            ? Icons.check_circle
+                                            : Icons.radio_button_unchecked,
+                                        size: 16,
+                                        color: item.$1
+                                            ? Ui.of(context).green
+                                            : Ui.of(context).muted,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Flexible(
+                                        child: Text(
+                                          item.$2,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: item.$1
+                                                ? Ui.of(context).green
+                                                : Ui.of(context).muted,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                            );
+                          },
                         ),
                         const SizedBox(height: 24),
                         Theme(

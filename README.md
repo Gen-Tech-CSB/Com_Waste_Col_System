@@ -1,80 +1,77 @@
-Community Waste Collection and Reporting System - Project Documentation
+Community Waste Collection and Reporting System (Frontend)
+
 Project Overview
-The Community Waste Collection and Reporting System is a cross-platform solution designed to streamline waste management operations for local communities. This Intermediate-level project provides residents with a centralized platform to view garbage collection schedules and submit reports regarding missed pickups or improper waste disposal. Barangay and Local Government Unit (LGU) staff utilize an administrative dashboard to manage schedules, process reports, and generate monthly community reports.
+The Community Waste Collection and Reporting System is a cross-platform application developed to bridge the communication gap between residents and local government units (LGU) regarding waste management. Built using Flutter, this frontend application empowers residents to easily access garbage collection schedules, report waste-related issues (such as missed pickups or illegal dumping) with photographic evidence, and track the progress of their reports in real-time. On the other hand, it provides barangay administrators with a comprehensive dashboard to manage schedules, review and resolve reports, broadcast announcements, and analyze community data for better decision-making.
 
-The system addresses critical gaps in community waste management by consolidating scattered communication channels (text messages, social media) into a unified platform with organized record-keeping and status tracking.
+Key Features Implemented
 
-Project Scope
-In-Scope Features
-Core Features (from Project Concept)
-Module	Description	Platform Support
-User Management & Authentication	Resident and admin registration/login with role-based access control; profile stores barangay/purok for automatic schedule display	Mobile, Web, Desktop
-Collection Schedule Management	Admins create/edit/delete schedules per barangay/zone by day, time, and waste type; residents view weekly/monthly calendars	Residents: Mobile, Web; Admin: Web, Desktop
-Waste Issue Reporting with Photos	Submit reports for missed pickups, illegal dumping, overflowing bins; includes category, description, location, and up to 3 photos	Mobile, Web
-Report Status Tracking	Unique reference numbers; status flow: Submitted → Under Review → In Progress → Resolved/Rejected; residents view status timeline with admin remarks	Mobile, Web, Desktop
-Admin Dashboard	Summary cards, searchable/filterable report lists, photo viewing, status updates, remarks, crew assignment	Web, Desktop
-Monthly Community Reports	Auto-generated summaries with charts, resolution rates, average resolution time; PDF and CSV export	Web, Desktop
-Proposed Additional Features
-Module	Description	Platform Support
-Notifications & Announcements	In-app notifications for status changes and collection reminders; admin announcements for schedule changes	Mobile, Web
-Waste Segregation Guide & Contacts	Educational content on proper waste sorting; FAQ section; waste office contact numbers	Mobile, Web
-Duplicate Report Flagging	System flags potential duplicates based on category, location, and date for admin review	Web, Desktop
-Resident Feedback	Post-resolution ratings and comments to measure service quality	Mobile, Web
-Local Data Persistence (Offline Cache)	SQLite caching for schedules and reports; offline draft saving with auto-sync	Mobile, Desktop
-Audit/Activity Log	Records admin actions (status changes, schedule edits) with timestamps	Web, Desktop
-Out of Scope
-The following features are explicitly excluded from this project:
+1. Authentication and Security
+- Resident Login and Registration.
+- Admin Secure Login with a dedicated prompt requiring specific credentials.
+- Session management and secure logout with confirmation dialogs.
+- Profile Management with an "Edit Profile" feature.
 
-Real-time GPS tracking of garbage trucks and route optimization
+2. Resident Dashboard
+- Collection Schedule: A real-time synced view of collection days categorized by waste type.
+- Report Submission: A comprehensive form allowing residents to submit waste issues with descriptions and image attachments using the Image Picker.
+- Local Data Persistence (Offline Drafts): Residents can save their reports as drafts locally, which are automatically loaded when they return.
+- My Reports and Status Timeline: A personalized list of submitted reports featuring a vertical timeline for transparency.
+- Resident Feedback: A 5-star rating and comment section to evaluate the service once a report is resolved.
+- Announcements: A dynamic banner displaying real-time updates posted by the Admin.
+- Waste Segregation Guide: An educational page with guidelines and emergency contact numbers.
 
-Payment or billing for waste collection fees
+3. Admin Dashboard
+- System Overview: Clickable gradient stat cards providing quick analytics (Total, Pending, In Progress, Resolved) that filter the report list.
+- Monthly Community Reports: Interactive Analytics screen featuring a Pie Chart (Reports by Status) and a Bar Chart (Reports per Barangay).
+- Manage Schedules: A complete system to add and delete collection schedules, instantly synced with the Resident's view.
+- Post Announcements: Real-time broadcasting of important community announcements.
+- Recent Reports and Search: A searchable and filterable list of community reports.
+- Duplicate Report Flagging: An automatic flagging system that detects and displays warnings for reports with the same category and location.
+- Report Review and Status Update: A detailed view where Admins can review report photos, update the status, add administrative remarks, and assign the report to a specific collection crew.
+- Activity Log: A historical log tracking all admin actions (e.g., schedules added, reports updated) for accountability.
 
-IoT or smart bin sensors; AI-based image classification
+Tech Stack and Tools
+- Framework: Flutter (Dart)
+- State Management: Provider
+- Image Handling: Image Picker
+- Charts and Analytics: FL Chart
+- Local Storage: Shared Preferences
+- UI Design: Custom Dark Theme, Gradients, Animations, and Soft Shadows.
 
-SMS or email gateway integration (requires paid services)
+Local Development Setup
 
-Integration with official government systems or multi-LGU deployment
+Prerequisites
+Ensure you have Flutter installed on your machine. Verify by running:
+flutter --version
 
-Cloud deployment and public hosting (local development server only)
+Installation Guide
+1. Clone the repository:
+git clone https://github.com/YOUR-GITHUB-USERNAME/community-waste-frontend.git
 
-App Store or Google Play Store publishing
+2. Navigate to the project directory:
+cd community-waste-frontend
 
-System Architecture
-Technology Stack
-Frontend
-Framework: Flutter (Dart) - single codebase for Mobile, Web, and Desktop
+3. Install dependencies:
+flutter pub get
 
-Mobile: Android (APK primary target); iOS optional (requires macOS)
+4. Launch the application on Chrome:
+flutter run -d chrome
 
-Web: Chrome, Firefox, Edge/Safari
+Default Mock Credentials (For Testing)
+Since the backend is still in development, use these credentials to test the features:
 
-Desktop: Windows (primary); macOS optional
+Resident Login:
+- Register a new account first, then log in using those credentials.
 
-Local Storage: SQLite for offline caching
+Admin Login:
+- Email: admin@waste.com
+- Password: admin123
 
-Backend
-Runtime: Node.js with Express.js (JavaScript)
+Development Team
+- Elopre - Frontend Developers (Flutter UI, State Management, Features)
+- Bagsican - Backend Developer (Node.js and PostgreSQL - In Progress)
+- Cinco - Team Leader
+- Quezon - Project Manager
+- Tomogsok - Quality Assurance
 
-API: RESTful JSON API
-
-Server: http://localhost:3000
-
-Authentication: JWT with bcrypt-hashed passwords; role-based access control (Resident/Admin)
-
-File Storage: Multer for photo uploads to local /uploads folder
-
-Database
-Primary: PostgreSQL (managed via pgAdmin)
-
-Client-side: SQLite for local persistence
-
-Development Tools
-Tool	Purpose
-Visual Studio Code	Primary IDE
-Android Studio	Android development and emulator
-Flutter SDK	Cross-platform framework
-Node.js & npm	Backend runtime and package management
-PostgreSQL & pgAdmin	Database management
-Postman	API testing
-Figma / Draw.io	UI mockups and diagrams
-Google Chrome	Web testing
+This project is developed as part of our academic requirement for Insert Subject Name Here.
